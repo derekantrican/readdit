@@ -18,6 +18,9 @@ function App() {
     if (subMatch) {
       setSourceString(subMatch[0].replace('/u/', '/user/'));
     }
+    else if (localStorage.getItem('source')) {
+      setSourceString(localStorage.getItem('source'));
+    }
     else {
       setSourceString('/r/all');
     }
