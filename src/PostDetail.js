@@ -1,3 +1,9 @@
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+//Todo: there's still trouble rendering markdown superscripts. I tried the remark-supersub Markdown plugin, but the syntax it expects
+//is not the same as reddit (it expects '^this^` rather than just `^this` where each consecutive ^ increases the "superscript level")
+
 function PostDetail(props) {
     //Todo: There will probably need to be some markdown rendering in the comments (or both)
     return (
@@ -22,7 +28,11 @@ function PostDetailHeader(props) {
         <div style={{margin: 10, fontWeight: 'bold'}}>{props.data[0].data.children[0].data.title}</div>
         <i style={{height: 30, width: 30, fontSize: '25px', marginLeft: 10}} className='bi bi-x-lg' onClick={() => props.close()}/>
         </div>
-        {props.data[0].data.children[0].data.selftext ? <p style={{whiteSpace: 'pre-line'}}>{props.data[0].data.children[0].data.selftext}</p> : null}
+        {props.data[0].data.children[0].data.selftext ?
+          <div style={{overflowWrap: 'anywhere'}}>
+            <Markdown remarkPlugins={[remarkGfm]}>{props.data[0].data.children[0].data.selftext}</Markdown>
+          </div>
+        : null}
     </div>
     );
 }
@@ -37,7 +47,9 @@ function PostDetailComments(props) {
             <div>{c.data.score}</div>
             <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
           </div>
-          <div style={{marginLeft: 10, overflowWrap: 'anywhere'}}>{c.data.body}</div>
+          <div style={{marginLeft: 10, overflowWrap: 'anywhere'}}>
+            <Markdown remarkPlugins={[remarkGfm]}>{c.data.body}</Markdown>
+          </div>
         </div>
         //Maybe allow expanding comments?
       )}
