@@ -50,7 +50,7 @@ function PostListing(props) {
       else if (props.post.gallery_data?.items) {
         return props.post.media_metadata[props.post.gallery_data.items[0].media_id].s.u;
       }
-      else {
+      else if (props.post.thumbnail && props.post.thumbnail != "default") {
         return props.post.thumbnail;
       }
     }
