@@ -45,7 +45,7 @@ function App() {
   useEffect(() => {
     var subMatch = /\/r\/(?<sub>\w+)/.exec(window.location.pathname); //Todo: also support mutlireddits (like /u/<user>/m/<multi>)
     if (subMatch) {
-      setSubs(subMatch.groups.sub);
+      setSubs([subMatch.groups.sub]);
     }
     else {
       setSubs(defaultSubs);
