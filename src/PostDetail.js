@@ -26,6 +26,7 @@ function PostDetailHeader(props) {
             <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
         </div>
         <div style={{margin: 10, fontWeight: 'bold'}}>{props.data[0].data.children[0].data.title}</div>
+        <div style={{flex: '1 0 0'}}/>{/*Fill available space so close button is always at the far right*/}
         <i style={{height: 30, width: 30, fontSize: '25px', marginLeft: 10}} className='bi bi-x-lg' onClick={() => props.close()}/>
         </div>
         {props.data[0].data.children[0].data.selftext ?
