@@ -37,7 +37,7 @@ function PostDetailComments(props) {
             <div>{c.data.score}</div>
             <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
           </div>
-          <div style={{marginLeft: 10}}>{c.data.body}</div>
+          <div style={{marginLeft: 10, overflowWrap: 'anywhere'}}>{c.data.body}</div>
         </div>
       )}
     </div>
