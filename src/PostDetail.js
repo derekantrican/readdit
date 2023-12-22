@@ -39,6 +39,7 @@ function PostDetailComments(props) {
           </div>
           <div style={{marginLeft: 10, overflowWrap: 'anywhere'}}>{c.data.body}</div>
         </div>
+        //Maybe allow expanding comments?
       )}
     </div>
   );
