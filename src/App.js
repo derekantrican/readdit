@@ -4,9 +4,6 @@ import PostListing from './PostListing';
 import PostDetail from './PostDetail';
 
 function App() {
-  const [view, setView] = useState('posts');
-  const cache = {}; //Todo: I don't think this is quite working
-
   const [sourceString, setSourceString] = useState(null);
   const [posts, setPosts] = useState([]);
   const [nextToken, setNextToken] = useState(null);
@@ -14,9 +11,9 @@ function App() {
   const [postData, setPostData] = useState(null);
 
   useEffect(() => {
-    var subMatch = /\/(r\/\w+|u(ser)?\/\w+\/m\/\w+)/.exec(window.location.pathname);
-    if (subMatch) {
-      setSourceString(subMatch[0].replace('/u/', '/user/'));
+    var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(window.location.pathname);
+    if (allowedSourceMatch) {
+      setSourceString(allowedSourceMatch[0].replace('/u/', '/user/'));
     }
     else if (localStorage.getItem('source')) {
       setSourceString(localStorage.getItem('source'));
@@ -26,18 +23,29 @@ function App() {
     }
   }, []);
 
+  const cache = {}; //Todo: I don't think this is quite working
+  const getRedditData = async (requestPath) => {
+    const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
+    if (!cache[url]) {
+      const response = await fetch(url);
+      const data = await response.json();
+      // console.log(data);
+      cache[url] = data;
+    }
+
+    return cache[url];
+  }
+
   useEffect(() => {
     async function getPosts() {
       if (sourceString) {
-        const url = `https://www.reddit.com${sourceString}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
-        if (!cache[url]) {
-          const response = await fetch(url);
-          const data = await response.json();
-          // console.log(data.data.children.map(p => p.data));
-          cache[url] = data.data.children.map(p => p.data);
+        const data = await getRedditData(sourceString);
+        if (sourceString.includes('/comments/')) {
+          setPostData(data);
         }
-
-        setPosts(cache[url]);
+        else {
+          setPosts(data.data.children.map(p => p.data));
+        }
         // setNextToken(data.data.after); //Todo: user next token
       }
     }
@@ -45,37 +53,16 @@ function App() {
     getPosts();
   }, [sourceString]);
 
-  useEffect(() => {
-    async function getPostData() {
-      setPostData(null);
-      if (view != 'posts') {
-        const url = `https://www.reddit.com/comments/${view}/.json?raw_json=1`;
-        if (!cache[url]) {
-          const response = await fetch(url);
-          const data = await response.json();
-          // console.log(data);
-          cache[url] = data;
-        }
-
-        setPostData(cache[url]);
-      }
-    }
-
-    getPostData();
-  }, [view]);
-
   return (
     <div>
       {/*Todo: fix scroll resetting when changing views*/}
-      <div style={{display: view == 'posts' ? 'block' : 'none'}}>
-        {posts.map(p => 
-          <PostListing key={p.id} post={p} openPost={() => setView(p.id)}/>
-        )}
-        {/* *Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)*/}
-      </div>
-      <div style={{display: view != 'posts' ? 'block' : 'none'}}>
-        {postData ? <PostDetail data={postData} close={() => setView('posts')}/> : null}
-      </div>
+      {sourceString && !sourceString.includes('/comments/')
+        ? posts.map(p => 
+          <PostListing key={p.id} post={p} openPost={() => window.open(`${process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app'}/comments/${p.id}`, '_self')}/>
+        )
+        //*Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)
+        : postData ? <PostDetail data={postData} close={() => window.history.back()}/> : null
+      }
     </div>
   );
 }
