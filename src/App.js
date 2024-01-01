@@ -10,6 +10,8 @@ function App() {
 
   const [postData, setPostData] = useState(null);
 
+  const baseUrl = () => process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app';
+
   useEffect(() => {
     var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(window.location.pathname);
     if (allowedSourceMatch) {
@@ -57,7 +59,7 @@ function App() {
     <div>
       {sourceString && !sourceString.includes('/comments/')
         ? posts.map(p => 
-          <PostListing key={p.id} post={p} openPost={() => window.open(`${process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app'}/comments/${p.id}`, '_self')}/>
+          <PostListing key={p.id} post={p} openPost={() => window.open(`${baseUrl()}${p.permalink}`, '_self')}/>
         )
         //*Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)
         : postData ? <PostDetail data={postData} close={() => window.history.back()}/> : null
