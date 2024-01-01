@@ -55,7 +55,6 @@ function App() {
 
   return (
     <div>
-      {/*Todo: fix scroll resetting when changing views*/}
       {sourceString && !sourceString.includes('/comments/')
         ? posts.map(p => 
           <PostListing key={p.id} post={p} openPost={() => window.open(`${process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app'}/comments/${p.id}`, '_self')}/>
