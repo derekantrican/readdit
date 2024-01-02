@@ -6,6 +6,7 @@ import PostDetail from './PostDetail';
 const cache = {};
 
 function App() {
+  const [lastSourceString, setLastSourceString] = useState(null);
   const [sourceString, setSourceString] = useState(null);
   const [posts, setPosts] = useState([]);
   const [nextToken, setNextToken] = useState(null);
@@ -35,7 +36,7 @@ function App() {
       // console.log(data);
       cache[url] = data;
     }
-
+  
     return cache[url];
   }
 
@@ -60,10 +61,13 @@ function App() {
     <div>
       {sourceString && !sourceString.includes('/comments/')
         ? posts.map(p => 
-          <PostListing key={p.id} post={p} openPost={() => window.open(`${baseUrl()}${p.permalink}`, '_self')}/>
+          <PostListing key={p.id} post={p} openPost={() => {
+            setLastSourceString(sourceString);
+            setSourceString(p.permalink);
+          }}/>
         )
         //*Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)
-        : postData ? <PostDetail data={postData} close={() => window.history.back()}/> : null
+        : postData ? <PostDetail data={postData} close={() => setSourceString(lastSourceString)}/> : null
       }
     </div>
   );
