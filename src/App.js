@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import PostListing from './PostListing';
 import PostDetail from './PostDetail';
 
+const cache = {};
+
 function App() {
   const [sourceString, setSourceString] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -25,7 +27,6 @@ function App() {
     }
   }, []);
 
-  const cache = {}; //Todo: I don't think this is quite working
   const getRedditData = async (requestPath) => {
     const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
     if (!cache[url]) {
