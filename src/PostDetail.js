@@ -53,7 +53,7 @@ function PostDetailComments(props) {
             <Markdown remarkPlugins={[remarkGfm]}>{c.data.body}</Markdown>
           </div>
         </div>
-        //Maybe allow expanding comments?
+        //Todo: Maybe allow expanding comments?
       )}
     </div>
   );
