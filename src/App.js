@@ -16,7 +16,11 @@ function App() {
   const baseUrl = () => process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app';
 
   useEffect(() => {
-    var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(window.location.pathname);
+    navigateSource(window.location.pathname);
+  }, []);
+
+  const navigateSource = (src) => {
+    var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
     if (allowedSourceMatch) {
       setSourceString(allowedSourceMatch[0].replace('/u/', '/user/'));
     }
@@ -26,29 +30,35 @@ function App() {
     else {
       setSourceString('/r/all');
     }
-  }, []);
+  }
 
   const getRedditData = async (requestPath) => {
     const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
-    if (!cache[url]) {
+    if (!cache[requestPath]) {
       const response = await fetch(url);
       const data = await response.json();
       // console.log(data);
-      cache[url] = data;
+      cache[requestPath] = {
+        data
+      };
     }
   
-    return cache[url];
+    return cache[requestPath].data;
   }
 
   useEffect(() => {
     async function getPosts() {
       if (sourceString) {
+        setPostData(null); //reset
+        window.history.pushState({}, null, baseUrl() + sourceString);
+
         const data = await getRedditData(sourceString);
         if (sourceString.includes('/comments/')) {
           setPostData(data);
         }
         else {
           setPosts(data.data.children.map(p => p.data));
+          window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
         }
         // setNextToken(data.data.after); //Todo: user next token
       }
@@ -57,17 +67,33 @@ function App() {
     getPosts();
   }, [sourceString]);
 
+  const saveScrollPosition = () => {
+    if (cache[sourceString]) {
+      cache[sourceString].scrollY = window.scrollY;
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', saveScrollPosition);
+    return () => window.removeEventListener('scroll', saveScrollPosition);
+  }, [saveScrollPosition]);
+
   return (
     <div>
       {sourceString && !sourceString.includes('/comments/')
-        ? posts.map(p => 
-          <PostListing key={p.id} post={p} openPost={() => {
-            setLastSourceString(sourceString);
-            setSourceString(p.permalink);
-          }}/>
-        )
-        //*Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)
-        : postData ? <PostDetail data={postData} close={() => setSourceString(lastSourceString)}/> : null
+        ? <div>
+            {posts.map(p => 
+              <PostListing key={p.id} post={p} openPost={() => {
+                setLastSourceString(sourceString);
+                navigateSource(p.permalink);
+              }}/>
+            )}
+          {/*Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)*/}
+          </div>
+        : postData ? <PostDetail data={postData} close={() => {
+          navigateSource(lastSourceString);
+          setLastSourceString(null);
+        }}/> : null
       }
     </div>
   );
