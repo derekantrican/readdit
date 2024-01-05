@@ -82,6 +82,10 @@ function App() {
     <div>
       {sourceString && !sourceString.includes('/comments/')
         ? <div>
+            <div style={{display: 'flex', alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
+              <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list'/>{/*Todo: make clicking this open a side panel for user settings */}
+              <h2>Readdit</h2>
+            </div>
             {posts.map(p => 
               <PostListing key={p.id} post={p} openPost={() => {
                 setLastSourceString(sourceString);
