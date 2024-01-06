@@ -2,10 +2,12 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import PostListing from './PostListing';
 import PostDetail from './PostDetail';
+import SideBar from './Sidebar';
 
 const cache = {};
 
 function App() {
+  const [panelOpen, setPanelOpen] = useState(false);
   const [lastSourceString, setLastSourceString] = useState(null);
   const [sourceString, setSourceString] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -20,12 +22,13 @@ function App() {
   }, []);
 
   const navigateSource = (src) => {
+    var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
     var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
     if (allowedSourceMatch) {
       setSourceString(allowedSourceMatch[0].replace('/u/', '/user/'));
     }
-    else if (localStorage.getItem('source')) {
-      setSourceString(localStorage.getItem('source'));
+    else if (localStorageSources.length > 0) {
+      setSourceString(localStorageSources.find(s => s.selected).sourceString);
     }
     else {
       setSourceString('/r/all');
@@ -37,7 +40,6 @@ function App() {
     if (!cache[requestPath]) {
       const response = await fetch(url);
       const data = await response.json();
-      // console.log(data);
       cache[requestPath] = {
         data
       };
@@ -79,13 +81,17 @@ function App() {
   }, [saveScrollPosition]);
 
   return (
-    <div>
+    <div className={panelOpen ? 'noscroll' : ''}>
       {sourceString && !sourceString.includes('/comments/')
         ? <div>
             <div style={{display: 'flex', alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
-              <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list'/>{/*Todo: make clicking this open a side panel for user settings */}
+              <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list' onClick={() => setPanelOpen(!panelOpen)}/>
               <h2>Readdit</h2>
             </div>
+            <SideBar isOpen={panelOpen} closePanel={() => {
+              setPanelOpen(false);
+              navigateSource(null); //Navigating to an empty source will pull from localStorage
+            }}/>
             {posts.map(p => 
               <PostListing key={p.id} post={p} openPost={() => {
                 setLastSourceString(sourceString);
