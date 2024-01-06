@@ -81,7 +81,7 @@ function App() {
   }, [saveScrollPosition]);
 
   return (
-    <div className={panelOpen ? 'noscroll' : ''}>
+    <div className={panelOpen ? 'noscroll' : ''/*Don't allow the screen to scroll while the panel is open*/}>
       {sourceString && !sourceString.includes('/comments/')
         ? <div>
             <div style={{display: 'flex', alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
