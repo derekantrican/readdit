@@ -39,7 +39,7 @@ function PostListing(props) {
     // - gfycat embed
     // - v.redd.it (reddit video) embed 
   
-    //This has a number of "converters and might be interesting: https://github.com/ubershmekel/redditp/blob/3641c615abd3fe56f6d8f9332696cfec2777026f/js/EmbedIt.js
+    //This has a number of "converters" and might be interesting: https://github.com/ubershmekel/redditp/blob/3641c615abd3fe56f6d8f9332696cfec2777026f/js/EmbedIt.js
     const getImage = () => {
       if (props.post.url.includes('.gif')) { //A gif can also have .preview.images so this should be listed first
         return props.post.url;
