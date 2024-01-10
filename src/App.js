@@ -25,7 +25,7 @@ function App() {
     var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
     var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
     if (allowedSourceMatch) {
-      setSourceString(allowedSourceMatch[0].replace('/u/', '/user/'));
+      setSourceString(allowedSourceMatch[0]);
     }
     else if (localStorageSources.length > 0) {
       setSourceString(localStorageSources.find(s => s.selected).sourceString);
@@ -36,6 +36,7 @@ function App() {
   }
 
   const getRedditData = async (requestPath) => {
+    requestPath = requestPath.replace('/u/', '/user/'); //Allow /u/derekantrican as a shorthand for /user/derekantrican
     const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
     if (!cache[requestPath]) {
       const response = await fetch(url);
