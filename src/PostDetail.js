@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -43,18 +44,33 @@ function PostDetailComments(props) {
   return (
     <div style={{display: 'flex', flexDirection: 'column'}}>
       {props.data.map(c =>
-        <div key={c.id} style={{display: 'flex', flexDirection: 'row', borderWidth: '2px 0px 0px 0px', borderStyle: 'solid', borderColor: 'gray', padding: 5}}>
-          <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-up-fill'/>
-            <div>{c.data.score}</div>
-            <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
-          </div>
-          <div style={{marginLeft: 10, overflowWrap: 'anywhere'}}>
-            <Markdown remarkPlugins={[remarkGfm]}>{c.data.body}</Markdown>
-          </div>
-        </div>
-        //Todo: Maybe allow expanding comments?
+        <Comment key={c.id} comment={c}/>
+        //Todo: handle the 'more' comment at the end
       )}
+    </div>
+  );
+}
+
+function Comment(props) {
+  const [areRepliesExpanded, setAreRepliesExpanded] = useState(false);
+
+  return (
+    <div style={{display: 'flex', flexDirection: 'column'}}>
+      <div key={props.comment.id} style={{display: 'flex', flexDirection: 'row', borderWidth: '2px 0px 0px 0px', borderStyle: 'solid', borderColor: 'gray', padding: 5}}>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-up-fill'/>
+          <div>{props.comment.data.score}</div>
+          <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
+        </div>
+        <div style={{display: 'flex', flexDirection: 'column', marginLeft: 10, overflowWrap: 'anywhere'}}>
+          <Markdown remarkPlugins={[remarkGfm]}>{props.comment.data.body}</Markdown>
+          <button style={{width: 80, alignSelf: 'end'}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>
+        </div>
+      </div>
+      {areRepliesExpanded 
+        ? props.comment.data.replies.data.children.map(c => <Comment key={c.id} comment={c}/>)
+        : null
+      }
     </div>
   );
 }
