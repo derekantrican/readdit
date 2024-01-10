@@ -1,8 +1,8 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import PostListing from './PostListing';
-import PostDetail from './PostDetail';
-import SideBar from './Sidebar';
+import PostListing from './components/PostListing';
+import PostDetail from './components/PostDetail';
+import SideBar from './components/Sidebar';
 
 const cache = {};
 
