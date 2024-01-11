@@ -91,6 +91,7 @@ function App() {
             </div>
             <SideBar isOpen={panelOpen} closePanel={() => {
               setPanelOpen(false);
+              setPosts([]); //Reset posts (to give an empty view while the new content is grabbed)
               navigateSource(null); //Navigating to an empty source will pull from localStorage
             }}/>
             {posts.map(p => 
