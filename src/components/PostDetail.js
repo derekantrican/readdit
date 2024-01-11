@@ -54,9 +54,14 @@ function PostDetailComments(props) {
 function Comment(props) {
   const [areRepliesExpanded, setAreRepliesExpanded] = useState(false);
 
+  const levelsAsArray = props.level ? Array.from(Array(props.level).keys()) : [];
+
   return (
     <div style={{display: 'flex', flexDirection: 'column'}}>
-      <div key={props.comment.id} style={{display: 'flex', flexDirection: 'row', borderWidth: '2px 0px 0px 0px', borderStyle: 'solid', borderColor: 'gray', padding: 5}}>
+      <div key={props.comment.id} style={{display: 'flex', flexDirection: 'row', borderWidth: '2px 0px 0px 0px', borderStyle: 'solid', borderColor: 'gray', padding: '5px 5px 5px 0px'}}>
+        {levelsAsArray.map(l =>
+          <div style={{borderLeft: '2px solid gray', marginRight: 5}}/>
+        )}
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-up-fill'/>
           <div>{props.comment.data.score}</div>
@@ -68,7 +73,7 @@ function Comment(props) {
         </div>
       </div>
       {areRepliesExpanded 
-        ? props.comment.data.replies.data.children.map(c => <Comment key={c.id} comment={c}/>)
+        ? props.comment.data.replies.data.children.map(c => <Comment key={c.id} comment={c} level={(props.level ?? 0) + 1}/>)
         : null
       }
     </div>
