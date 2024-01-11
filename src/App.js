@@ -35,7 +35,7 @@ function App() {
       resolvedSourceString = '/r/all';
     }
 
-    if (resolvedSourceString != null &&
+    if (sourceString != null &&
         resolvedSourceString != sourceString && 
         !resolvedSourceString.includes('/comments/') &&
         !sourceString.includes('/comments/')) {
