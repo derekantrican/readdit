@@ -1,3 +1,5 @@
+import RedditVideoPlayer from "./reddit-video";
+
 function PostListing(props) {
     /* Todo:
     *   - Lazy load images (https://www.npmjs.com/package/react-lazy-load-image-component)
@@ -69,17 +71,21 @@ function PostListing(props) {
   
     if (!props.post.is_self) { //Todo: break out these "embeds" to separate files
       //Todo: handle reddit video
-      /*if (props.post.is_video && props.post.media?.reddit_video) {
+      if (props.post.is_video && props.post.media?.reddit_video) {
         //https://old.reddit.com/r/redditdev/comments/hssi63/how_to_embed_external_and_hosted_reddit/fych52h/
         //https://github.com/junipf/reddit-frontend/blob/master/src/components/reddit-video.jsx
+        // return (
+        //   <video loop controls style={{width: '100%', height :'100%', marginTop: 10}}>
+        //     <source src={props.post.media.reddit_video.fallback_url}/>
+        //     <audio src={pr}
+        //   </video>
+        // );
+
         return (
-          <video loop controls style={{width: '100%', height :'100%', marginTop: 10}}>
-            <source src={props.post.media.reddit_video.fallback_url}/>
-            <audio src={pr}
-          </video>
-        );
+          <RedditVideoPlayer id={props.post.id} sourceUrl={props.post.media.reddit_video.fallback_url}/>
+        )
       }
-      else*/ if (props.post.url.includes('.gifv') || props.post.is_video) {
+      else if (props.post.url.includes('.gifv') || props.post.is_video) {
         return (
           <video loop controls style={{width: '100%', height :'100%', marginTop: 10}}>
             <source src={props.post.url.replace('.gifv', '.mp4')}/>
