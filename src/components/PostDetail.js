@@ -43,9 +43,9 @@ function PostDetailHeader(props) {
 function PostDetailComments(props) {
   return (
     <div style={{display: 'flex', flexDirection: 'column'}}>
-      {props.data.map(c =>
+      {props.data.filter(c => c.kind == 't1' /*filter out other kinds (eg 'more')*/).map(c =>
         <Comment key={c.id} comment={c}/>
-        //Todo: handle the 'more' comment at the end
+        //Todo: handle the 'more' comment at the end?
       )}
     </div>
   );
@@ -69,7 +69,10 @@ function Comment(props) {
         </div>
         <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 10, overflowWrap: 'anywhere'}}>
           <Markdown remarkPlugins={[remarkGfm]}>{props.comment.data.body}</Markdown>
-          <button style={{width: 80, alignSelf: 'end'}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>
+          {props.comment.data.replies
+            ? <button style={{width: 80, alignSelf: 'end'}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>
+            : null
+          }
         </div>
       </div>
       {areRepliesExpanded 
