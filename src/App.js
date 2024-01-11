@@ -24,15 +24,23 @@ function App() {
   const navigateSource = (src) => {
     var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
     var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
+    var resolvedSourceString;
     if (allowedSourceMatch) {
-      setSourceString(allowedSourceMatch[0]);
+      resolvedSourceString = allowedSourceMatch[0];
     }
     else if (localStorageSources.length > 0) {
-      setSourceString(localStorageSources.find(s => s.selected).sourceString);
+      resolvedSourceString = localStorageSources.find(s => s.selected).sourceString;
+      setSourceString();
     }
     else {
-      setSourceString('/r/all');
+      resolvedSourceString = '/r/all';
     }
+
+    if (resolvedSourceString != sourceString) {
+      setPosts([]); //Reset posts (to give an empty view while the new content is grabbed)
+    }
+
+    setSourceString(resolvedSourceString);
   }
 
   const getRedditData = async (requestPath) => {
@@ -91,7 +99,6 @@ function App() {
             </div>
             <SideBar isOpen={panelOpen} closePanel={() => {
               setPanelOpen(false);
-              setPosts([]); //Reset posts (to give an empty view while the new content is grabbed)
               navigateSource(null); //Navigating to an empty source will pull from localStorage
             }}/>
             {posts.map(p => 
