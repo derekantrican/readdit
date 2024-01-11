@@ -30,7 +30,6 @@ function App() {
     }
     else if (localStorageSources.length > 0) {
       resolvedSourceString = localStorageSources.find(s => s.selected).sourceString;
-      setSourceString();
     }
     else {
       resolvedSourceString = '/r/all';
