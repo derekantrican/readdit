@@ -35,8 +35,11 @@ function App() {
       resolvedSourceString = '/r/all';
     }
 
-    if (resolvedSourceString != sourceString) {
-      setPosts([]); //Reset posts (to give an empty view while the new content is grabbed)
+    if (resolvedSourceString != sourceString && 
+        !resolvedSourceString.includes('/comments/') &&
+        !sourceString.includes('/comments/')) {
+      //Reset posts when subscribed post source isn't changing (to give an empty view while the new content is grabbed)
+      setPosts([]);
     }
 
     setSourceString(resolvedSourceString);
