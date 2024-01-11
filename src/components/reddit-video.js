@@ -35,11 +35,15 @@ function RedditVideoPlayer(props) {
 
   const pause = () => {
     $audio.current.pause();
-  }
+  };
 
+  let lastSeek = null;
   const seek = () => {
-    $audio.current.currentTime = $video.current.currentTime;
-  }
+    if (lastSeek != $video.current.currentTime) { //Apparently this gets fired almost continuously, so we'll skip if not needed here
+      lastSeek = $video.current.currentTime;
+      $audio.current.currentTime = $video.current.currentTime;
+    }
+  };
 
   return (
     <video ref={$video} controls src={props.sourceUrl}
