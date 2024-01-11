@@ -62,7 +62,7 @@ function Comment(props) {
           <div>{props.comment.data.score}</div>
           <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
         </div>
-        <div style={{display: 'flex', flexDirection: 'column', marginLeft: 10, overflowWrap: 'anywhere'}}>
+        <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 10, overflowWrap: 'anywhere'}}>
           <Markdown remarkPlugins={[remarkGfm]}>{props.comment.data.body}</Markdown>
           <button style={{width: 80, alignSelf: 'end'}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>
         </div>
