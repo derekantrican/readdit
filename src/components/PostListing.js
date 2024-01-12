@@ -1,4 +1,4 @@
-import RedditVideoPlayer from "./reddit-video";
+import RedditVideoPlayer from "./embeds/reddit-video";
 
 function PostListing(props) {
     /* Todo:
