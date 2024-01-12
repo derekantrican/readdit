@@ -1,4 +1,5 @@
 import RedditVideoPlayer from "./embeds/reddit-video";
+import RedGifsPlayer from "./embeds/redgifs";
 
 function PostListing(props) {
     /* Todo:
@@ -63,12 +64,6 @@ function PostListing(props) {
       return (match && match[7].length==11)? match[7] : false;
     }
   
-    const parseRedGifsId = (url) => {
-      var regExp = /redgifs\.com\/watch\/(\w*)/;
-      var match = url.match(regExp);
-      return match && match[1];
-    }
-  
     if (!props.post.is_self) { //Todo: break out these "embeds" to separate files
       //Todo: handle reddit video
       if (props.post.is_video && props.post.media?.reddit_video) {
@@ -98,10 +93,8 @@ function PostListing(props) {
         );
       }
       else if (props.post.url.includes('redgifs') && !props.post.url.includes('i.redgifs.com') /*Allow static images to be handled as any other static image*/) {
-        //Todo: I would prefer to get the direct link. Looks like I can do that by getting a temporary token, then calling the API: 
-        // https://github.com/yt-dlp/yt-dlp/blob/0b6f829b1dfda15d3c1d7d1fbe4ea6102c26dd24/yt_dlp/extractor/redgifs.py#L68
         return (
-          <iframe style={{height: sizeRatio * (window.screen.width - 30), width: '100%', marginTop: 10}} allowFullScreen sandbox src={`https://redgifs.com/ifr/${parseRedGifsId(props.post.url)}`}/>
+          <RedGifsPlayer sizeRatio={sizeRatio} url={props.post.url}/>
         );
       }
       else {
