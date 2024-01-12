@@ -19,8 +19,10 @@ function RedditVideoPlayer(props) {
         const response = await fetch(baseMediaUrl + 'DASHPlaylist.mpd');
         const responseText = await response.text();
         //regex parsing xml definitely isn't the best approach (https://stackoverflow.com/a/702222/2246411), however it's quick and dirty for now
-        const { audio_path } = /(?<=AudioChannelConfiguration).*?<BaseURL>(?<audio_path>.*?)<\/BaseURL>/gms.exec(responseText).groups;
-        setAudioUrl(baseMediaUrl + audio_path);
+        if (responseText.includes('AudioChannelConfiguration')) { //Some videos don't have audio, so the audio url will be missing
+          const { audio_path } = /(?<=AudioChannelConfiguration).*?<BaseURL>(?<audio_path>.*?)<\/BaseURL>/gms.exec(responseText).groups;
+          setAudioUrl(baseMediaUrl + audio_path);
+        }
       }
     }
 
@@ -31,16 +33,20 @@ function RedditVideoPlayer(props) {
   const $audio = useRef(null);
 
   const play = () => {
-    $audio.current.play();
+    if (audioUrl) {
+      $audio.current.play();
+    }
   };
 
   const pause = () => {
-    $audio.current.pause();
+    if (audioUrl) {
+      $audio.current.pause();
+    }
   };
 
   let lastSeek = null;
   const seek = () => {
-    if (lastSeek != $video.current.currentTime) { //Apparently this event gets fired almost continuously, so we'll skip if not needed here
+    if (audioUrl && lastSeek != $video.current.currentTime) { //Apparently this event gets fired almost continuously, so we'll skip if not needed here
       lastSeek = $video.current.currentTime;
       $audio.current.currentTime = $video.current.currentTime;
     }
