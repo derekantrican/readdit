@@ -2,18 +2,31 @@ import RedditVideoPlayer from "./embeds/reddit-video";
 import RedGifsPlayer from "./embeds/redgifs";
 
 function PostListing(props) {
+  console.log(props.post)
     /* Todo:
     *   - Lazy load images (https://www.npmjs.com/package/react-lazy-load-image-component)
     *   - Allow clicking on images to see full resolution image
-    *   - Add comments link
     *   - Maybe handle images from cross posts better? (ex https://old.reddit.com/r/functionalprints/comments/18bo7zx/turning_a_standing_lamp_into_a_wall_lamp/)
     */
+
+    const sharePost = (title, url) => {
+      //Todo: should have an option to share the comment url rather than the post url
+      if (navigator.share) {
+        navigator.share({
+          title: title,
+          url: url
+        })
+      }
+    };
   
     return (
       <div style={{display: 'flex', flexDirection: 'column', padding: 10, border: '2px solid gray', margin: '10px 5px', backgroundColor: '#3f3f3f'}}>
         <PostListingHeader post={props.post}/>
         <PostListingContent post={props.post}/>
-        <button style={{marginTop: 10, width: 100, alignSelf: 'end'}} onClick={() => props.openPost()}>Comments</button>
+        <div style={{display: 'flex', marginTop: 5}}>
+          <i style={{fontSize: 20, textAlign: 'center', flex: '1 1 0'}} className='bi bi-share' onClick={() => sharePost(props.post.title, props.post.url)}/>
+          <i style={{fontSize: 20, textAlign: 'center', flex: '1 1 0'}} className='bi bi-chat-left-text-fill' onClick={() => props.openPost()}/>
+        </div>
       </div>
     );
   }
