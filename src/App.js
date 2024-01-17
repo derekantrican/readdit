@@ -64,7 +64,10 @@ function App() {
     async function getPosts() {
       if (sourceString) {
         setPostData(null); //reset
-        window.history.pushState({}, null, baseUrl() + sourceString);
+
+        if (process.env.NODE_ENV == 'production') {
+          window.history.pushState({}, null, baseUrl() + sourceString);
+        }
 
         const data = await getRedditData(sourceString);
         if (sourceString.includes('/comments/')) {
