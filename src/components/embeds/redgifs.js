@@ -27,7 +27,7 @@ function RedGifsPlayer(props) {
   }
   
   return (
-    <iframe style={{height: props.sizeRatio * (window.screen.width - 30), width: '100%', marginTop: 10}} allowFullScreen sandbox src={`https://redgifs.com/ifr/${parseRedGifsId(props.url)}`}/>
+    <iframe height={props.height} width='100%' style={{marginTop: 10}} allowFullScreen sandbox src={`https://redgifs.com/ifr/${parseRedGifsId(props.url)}`}/>
   );
 }
 

@@ -53,7 +53,7 @@ function RedditVideoPlayer(props) {
   };
 
   return (
-    <video ref={$video} controls src={props.sourceUrl}
+    <video height={props.height} width='100%' ref={$video} controls src={props.sourceUrl}
       onPlay={play} onPause={pause} onSeeked={seek}>
       <audio ref={$audio} src={audioUrl}/>
     </video>

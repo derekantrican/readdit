@@ -49,6 +49,8 @@ function PostListing(props) {
   
   function PostListingContent(props) {
     const sizeRatio = props.post.thumbnail_height / props.post.thumbnail_width;
+
+    const height = sizeRatio * (window.screen.width - 30);
   
     //Todo:
     // - gfycat embed
@@ -89,29 +91,29 @@ function PostListing(props) {
         // );
 
         return (
-          <RedditVideoPlayer id={props.post.id} sourceUrl={props.post.media.reddit_video.fallback_url}/>
+          <RedditVideoPlayer height={height} id={props.post.id} sourceUrl={props.post.media.reddit_video.fallback_url}/>
         )
       }
       else if (props.post.url.includes('.gifv') || props.post.is_video) {
         return (
-          <video loop controls style={{width: '100%', height :'100%', marginTop: 10}}>
+          <video height='100%' width='100%' loop controls style={{marginTop: 10}}>
             <source src={props.post.url.replace('.gifv', '.mp4')}/>
           </video>
         );
       }
       else if (props.post.url.includes('youtube') || props.post.url.includes('youtu.be')) {
         return (
-          <iframe style={{height: sizeRatio * (window.screen.width - 30), width: '100%', marginTop: 10}} allowFullScreen src={`https://www.youtube.com/embed/${parseYouTubeId(props.post.url)}`}/>
+          <iframe height={height} width='100%' style={{marginTop: 10}} allowFullScreen src={`https://www.youtube.com/embed/${parseYouTubeId(props.post.url)}`}/>
         );
       }
       else if (props.post.url.includes('redgifs') && !props.post.url.includes('i.redgifs.com') /*Allow static images to be handled as any other static image*/) {
         return (
-          <RedGifsPlayer sizeRatio={sizeRatio} url={props.post.url}/>
+          <RedGifsPlayer height={height} url={props.post.url}/>
         );
       }
       else {
         return (
-          <img style={{height: '100%', width: '100%', marginTop: 10}} src={getImage()}/>
+          <img height='100%' width='100%' style={{marginTop: 10}} src={getImage()}/>
         );
       }
     }
