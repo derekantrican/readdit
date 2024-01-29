@@ -44,7 +44,7 @@ function PostDetailComments(props) {
   return (
     <div style={{display: 'flex', flexDirection: 'column'}}>
       {props.data.filter(c => c.kind == 't1' /*filter out other kinds (eg 'more')*/).map(c =>
-        <Comment key={c.id} comment={c}/>
+        <Comment key={c.data.id} comment={c}/>
         //Todo: handle the 'more' comment at the end?
       )}
     </div>
