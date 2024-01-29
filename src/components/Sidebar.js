@@ -49,7 +49,7 @@ export function SideBar(props) {
 
   return (
     <div className={props.isOpen ? "sidebar open" : "sidebar"}>
-      <div style={{display: 'flex', flexDirection: 'column'}}>
+      <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
         <div style={{display: 'flex'}}>
             <h2 style={{margin: 5}}>Sources</h2>
             <div style={{flex: '1 0 0'}}/>{/*Fill available space so close button is always at the far right*/}
@@ -84,6 +84,8 @@ export function SideBar(props) {
         <button style={{margin: '40px 5px 5px 5px', height: 40}} onClick={saveChanges}>
                 Save
         </button>
+        <div style={{flex: '1 0 0'}}/>
+        {localStorage.getItem('dev') == 'true' ? <p style={{margin: 10}}>Dev mode</p> : null}
       </div>
     </div>
   );

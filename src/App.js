@@ -18,6 +18,10 @@ function App() {
   const baseUrl = () => process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app';
 
   useEffect(() => {
+    if (window.location.pathname.endsWith('/dev')) {
+      localStorage.setItem('dev', 'true');
+    }
+
     navigateSource(window.location.pathname);
   }, []);
 
