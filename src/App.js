@@ -46,7 +46,9 @@ function App() {
     setSourceString(resolvedSourceString);
   }
 
+  //Todo: use react-query's 'useQuery' to improve this (https://youtu.be/vxkbf5QMA2g)
   const getRedditData = async (requestPath) => {
+    //Todo: this '.replace' here is causing the scroll position to not be reset (because it doesn't match sourceString)
     requestPath = requestPath.replace('/u/', '/user/'); //Allow /u/derekantrican as a shorthand for /user/derekantrican
     const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
     if (!cache[requestPath]) {
