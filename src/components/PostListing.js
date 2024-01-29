@@ -2,7 +2,6 @@ import RedditVideoPlayer from "./embeds/reddit-video";
 import RedGifsPlayer from "./embeds/redgifs";
 
 function PostListing(props) {
-  console.log(props.post)
     /* Todo:
     *   - Lazy load images (https://www.npmjs.com/package/react-lazy-load-image-component)
     *   - Allow clicking on images to see full resolution image
