@@ -6,8 +6,6 @@ import remarkGfm from 'remark-gfm';
 //is not the same as reddit (it expects '^this^` rather than just `^this` where each consecutive ^ increases the "superscript level")
 
 function PostDetail(props) {
-    //Todo: There will probably need to be some markdown rendering in the comments (or both)
-    //Todo: show images (& galleries), embeds (eg videos), etc
     return (
       <div style={{display: 'flex', flexDirection: 'column', padding: 10}}>
         <PostDetailHeader data={props.data[0].data.children[0].data /*The 'post data' section*/} close={props.close}/>
@@ -17,7 +15,7 @@ function PostDetail(props) {
 }
   
 function PostDetailHeader(props) {
-    //Todo: right now this is geared toward self posts, but we should be able to support galleries (eg functionalprint), etc
+    //Todo: show images (& galleries - eg functionalprint), embeds (eg videos), etc
   
     return (
         <div style={{display: 'flex', flexDirection: 'column'}}>
