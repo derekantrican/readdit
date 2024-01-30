@@ -73,9 +73,11 @@ function Comment(props) {
           }
         </div>
       </div>
+      {/*Todo: see if I can de-dupe this code with 'PostDetailComments' above*/}
       {areRepliesExpanded 
-        ? props.comment.data.replies.data.children.map(c => <Comment key={c.id} comment={c} level={(props.level ?? 0) + 1}/>)
-        : null
+        ? props.comment.data.replies.data.children.filter(c => c.kind == 't1' /*filter out other kinds (eg 'more')*/).map(c => 
+          <Comment key={c.id} comment={c} level={(props.level ?? 0) + 1}/>
+        ) : null
       }
     </div>
   );
