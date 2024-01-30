@@ -55,11 +55,15 @@ function App() {
   //Todo: use react-query's 'useQuery' to improve this (https://youtu.be/vxkbf5QMA2g)
   const getRedditData = async (requestPath) => {
     const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
-    if (!cache[requestPath]) {
+
+    const decayTime = 15 * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
+    console.log(!cache[requestPath])
+    if (!cache[requestPath] || (new Date() - cache[requestPath].updated) > decayTime) {
       const response = await fetch(url);
       const data = await response.json();
       cache[requestPath] = {
-        data
+        data,
+        updated : new Date(),
       };
     }
   
