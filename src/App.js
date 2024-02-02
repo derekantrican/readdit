@@ -107,22 +107,22 @@ function App() {
 
   return (
     <div className={panelOpen ? 'noscroll' : ''/*Don't allow the screen to scroll while the panel is open*/}>
+      {/*Todo: setting 'noscroll' (with 'height: 100%') causes the post scroll position to reset when the sidepanel is opened*/}
       {sourceString && !sourceString.includes('/comments/')
         ? <div>
-            <div style={{display: 'flex', alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
-              <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list' onClick={() => setPanelOpen(!panelOpen)}/>
-              <h2>Readdit</h2>
-            </div>
+            <Header togglePanel={() => setPanelOpen(!panelOpen)}/>
             <SideBar isOpen={panelOpen} closePanel={() => {
               setPanelOpen(false);
               navigateSource(null); //Navigating to an empty source will pull from localStorage
             }}/>
-            {posts.map(p => 
-              <PostListing key={p.id} post={p} openPost={() => {
-                setLastSourceString(sourceString);
-                navigateSource(p.permalink);
-              }}/>
-            )}
+            <div style={{paddingTop: 50}}>
+              {posts.map(p => 
+                <PostListing key={p.id} post={p} openPost={() => {
+                  setLastSourceString(sourceString);
+                  navigateSource(p.permalink);
+                }}/>
+              )}
+            </div>
           {/*Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)*/}
           </div>
         : postData ? <PostDetail data={postData} close={() => {
@@ -130,6 +130,31 @@ function App() {
           setLastSourceString(null);
         }}/> : null
       }
+    </div>
+  );
+}
+
+function Header(props) {
+  const [isVisible, setIsVisible] = useState(true);
+  const [scrollY, setScrollY] = useState(0);
+  
+  const handleScroll = () => {
+    const cur = window.scrollY;
+    const visible = scrollY > cur || cur < 50;
+
+    setIsVisible(visible);
+    setScrollY(cur);
+  }
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [scrollY]);
+
+  return (
+    <div style={{position: 'fixed', top: 0, width: '100%', zIndex: 1000, display: isVisible ? 'flex' : 'none', alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
+      <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list' onClick={props.togglePanel}/>
+      <h2>Readdit</h2>
     </div>
   );
 }
