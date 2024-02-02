@@ -13,6 +13,8 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [nextToken, setNextToken] = useState(null);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [postData, setPostData] = useState(null);
 
   const baseUrl = () => process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app';
@@ -52,22 +54,36 @@ function App() {
     setSourceString(resolvedSourceString);
   }
 
-  //Todo: use react-query's 'useQuery' to improve this (https://youtu.be/vxkbf5QMA2g)
   const getRedditData = async (requestPath) => {
     const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
 
     const decayTime = 15 * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
-    console.log(!cache[requestPath])
     if (!cache[requestPath] || (new Date() - cache[requestPath].updated) > decayTime) {
-      const response = await fetch(url);
-      const data = await response.json();
-      cache[requestPath] = {
-        data,
-        updated : new Date(),
-      };
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch');
+        }
+
+        const data = await response.json();
+        cache[requestPath] = {
+          data,
+          updated : new Date(),
+        };
+        return cache[requestPath].data;
+      }
+      catch (e) {
+        setError(e);
+        alert(e); //Todo: this should be a toast or something else nicer
+      }
+      finally {
+        setIsLoading(false);
+      }
     }
-  
-    return cache[requestPath].data;
   }
 
   useEffect(() => {
@@ -83,7 +99,7 @@ function App() {
         if (sourceString.includes('/comments/')) {
           setPostData(data);
         }
-        else {
+        else if (data) {
           setPosts(data.data.children.map(p => p.data));
           window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
         }
@@ -110,12 +126,12 @@ function App() {
       {/*Todo: setting 'noscroll' (with 'height: 100%') causes the post scroll position to reset when the sidepanel is opened*/}
       {sourceString && !sourceString.includes('/comments/')
         ? <div>
-            <Header togglePanel={() => setPanelOpen(!panelOpen)}/>
+            <Header togglePanel={() => setPanelOpen(!panelOpen)} isLoading={isLoading}/>
             <SideBar isOpen={panelOpen} closePanel={() => {
               setPanelOpen(false);
               navigateSource(null); //Navigating to an empty source will pull from localStorage
             }}/>
-            <div style={{paddingTop: 50}}>
+            <div style={{paddingTop: 55}}>
               {posts.map(p => 
                 <PostListing key={p.id} post={p} openPost={() => {
                   setLastSourceString(sourceString);
@@ -152,9 +168,16 @@ function Header(props) {
   }, [scrollY]);
 
   return (
-    <div style={{position: 'fixed', top: 0, width: '100%', zIndex: 1000, display: isVisible ? 'flex' : 'none', alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
-      <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list' onClick={props.togglePanel}/>
-      <h2>Readdit</h2>
+    <div style={{position: 'fixed', top: 0, width: '100%', zIndex: 1000, display: isVisible ? 'flex' : 'none', flexDirection: 'column', height: 55}}>
+      <div style={{display: 'flex',  alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
+        <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list' onClick={props.togglePanel}/>
+        <h2 style={{margin: 0}}>Readdit</h2>
+      </div>
+      {props.isLoading ?
+        <div className="progress-bar">
+          <div className="progress-bar-value"></div>
+        </div>
+      : null}
     </div>
   );
 }
