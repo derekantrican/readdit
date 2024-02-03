@@ -58,31 +58,34 @@ function App() {
     const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
 
     const decayTime = 15 * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
-    if (!cache[requestPath] || (new Date() - cache[requestPath].updated) > decayTime) {
-      try {
-        setIsLoading(true);
-        setError(null);
+    
+    if (cache[requestPath] && (new Date() - cache[requestPath].updated) < decayTime) {
+      return cache[requestPath].data;
+    }
 
-        const response = await fetch(url);
+    try {
+      setIsLoading(true);
+      setError(null);
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch');
-        }
+      const response = await fetch(url);
 
-        const data = await response.json();
-        cache[requestPath] = {
-          data,
-          updated : new Date(),
-        };
-        return cache[requestPath].data;
+      if (!response.ok) {
+        throw new Error('Failed to fetch');
       }
-      catch (e) {
-        setError(e);
-        alert(e); //Todo: this should be a toast or something else nicer
-      }
-      finally {
-        setIsLoading(false);
-      }
+
+      const data = await response.json();
+      cache[requestPath] = {
+        data,
+        updated : new Date(),
+      };
+      return cache[requestPath].data;
+    }
+    catch (e) {
+      setError(e);
+      alert(e); //Todo: this should be a toast or something else nicer
+    }
+    finally {
+      setIsLoading(false);
     }
   }
 
