@@ -17,12 +17,16 @@ function App() {
   const [error, setError] = useState(null);
   const [postData, setPostData] = useState(null);
 
+  const [isDevMode, setIsDevMode] = useState(false);
+
   const baseUrl = () => process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app';
 
   useEffect(() => {
     if (window.location.pathname.endsWith('/dev')) {
       localStorage.setItem('dev', 'true');
     }
+
+    setIsDevMode(localStorage.getItem('dev') == 'true');
 
     navigateSource(window.location.pathname);
   }, []);
@@ -136,7 +140,7 @@ function App() {
             }}/>
             <div style={{paddingTop: 55}}>
               {posts.map(p => 
-                <PostListing key={p.id} post={p} openPost={() => {
+                <PostListing key={p.id} post={p} isDevMode={isDevMode} openPost={() => {
                   setLastSourceString(sourceString);
                   navigateSource(p.permalink);
                 }}/>
