@@ -24,6 +24,7 @@ function App() {
   useEffect(() => {
     if (window.location.pathname.endsWith('/dev')) {
       localStorage.setItem('dev', 'true');
+      alert('Dev mode has been turned on');
     }
 
     setIsDevMode(localStorage.getItem('dev') == 'true');
