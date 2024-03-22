@@ -25,8 +25,8 @@ function PostListing(props) {
         <div style={{display: 'flex', marginTop: 5}}>
           <i style={{fontSize: 20, textAlign: 'center', flex: '1 1 0'}} className='bi bi-share' onClick={() => sharePost(props.post.title, props.post.url)}/>
           {props.isDevMode ? 
-            <a style={{color: 'white'}} href={`https://github.com/derekantrican/readdit/issues/new?title=Problem+with+post&body=${encodeURIComponent(props.post.permalink)}`}>
-              <i style={{fontSize: 20, textAlign: 'center', flex: '1 1 0'}} className='bi bi-bug'/>
+            <a style={{color: 'white', textAlign: 'center', flex: '1 1 0'}} href={`https://github.com/derekantrican/readdit/issues/new?title=Problem+with+post&body=${encodeURIComponent(props.post.permalink)}`}>
+              <i style={{fontSize: 20}} className='bi bi-bug'/>
             </a>
           : null}
           <i style={{fontSize: 20, textAlign: 'center', flex: '1 1 0'}} className='bi bi-chat-left-text-fill' onClick={() => props.openPost()}/>
