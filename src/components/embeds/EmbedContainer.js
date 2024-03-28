@@ -1,3 +1,4 @@
+import ImageGallery from "./ImageGallery";
 import RedditVideoPlayer from "./reddit-video";
 import RedGifsPlayer from "./redgifs";
 
@@ -17,10 +18,6 @@ function EmbedContainer(props) {
     }
     else if (props.post.preview?.images) {
       return props.post.preview.images[0].source.url;
-    }
-    else if (props.post.gallery_data?.items) {
-      var firstImageData = props.post.media_metadata[props.post.gallery_data.items[0].media_id];
-      return firstImageData.s.u ?? firstImageData.s.gif;
     }
     else if (props.post.thumbnail && props.post.thumbnail != "default") {
       return props.post.thumbnail;
@@ -58,7 +55,11 @@ function EmbedContainer(props) {
         <RedGifsPlayer height={height} url={props.post.url}/>
       );
     }
-    //Todo: handle galleries separately
+    else if (props.post.is_gallery) {
+      return (
+        <ImageGallery post={props.post}/>
+      );
+    }
     else {
       return (
         <img height='100%' width='100%' style={{marginTop: 10}} src={getImage()}/>
