@@ -9,6 +9,7 @@ function PostDetail(props) {
     return (
       <div style={{display: 'flex', flexDirection: 'column', padding: 10}}>
         <PostDetailHeader data={props.data[0].data.children[0].data /*The 'post data' section*/} close={props.close}/>
+        {/*Todo: add EmbedContainer */}
         <PostDetailComments data={props.data[1].data.children /*The 'comments' section*/}/>
       </div>
     );
