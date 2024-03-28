@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import EmbedContainer from './embeds/EmbedContainer';
 
 //Todo: there's still trouble rendering markdown superscripts. I tried the remark-supersub Markdown plugin, but the syntax it expects
 //is not the same as reddit (it expects '^this^` rather than just `^this` where each consecutive ^ increases the "superscript level")
@@ -9,8 +10,8 @@ function PostDetail(props) {
     return (
       <div style={{display: 'flex', flexDirection: 'column', padding: 10}}>
         <PostDetailHeader data={props.data[0].data.children[0].data /*The 'post data' section*/} close={props.close}/>
-        {/*Todo: add EmbedContainer */}
-        <PostDetailComments data={props.data[1].data.children /*The 'comments' section*/}/>
+        <EmbedContainer post={props.data[0].data.children[0].data}/>{/*Todo: make this full width*/}
+        <PostDetailComments data={props.data[1].data.children /*The 'comments' section*/}/>{/*Todo: should comments scroll while leaving the header in place?*/}
       </div>
     );
 }
