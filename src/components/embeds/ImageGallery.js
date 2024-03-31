@@ -1,8 +1,17 @@
 function ImageGallery(props) {
   //TEMP (until we can return a proper, pageable display)
   const getImage = () => {
-    var firstImageData = props.post.media_metadata[props.post.gallery_data.items[0].media_id];
-    return firstImageData.s.u ?? firstImageData.s.gif;
+    var firstImageData;
+    for (var media of props.post.gallery_data.items) {
+      if (props.post.media_metadata[media.media_id].status == 'valid') {
+        firstImageData = props.post.media_metadata[media.meda_id];
+        break;
+      }
+    }
+
+    if (firstImageData) {
+      return firstImageData.s.u ?? firstImageData.s.gif;
+    }
   }
 
   return (
