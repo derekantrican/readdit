@@ -4,7 +4,7 @@ function ImageGallery(props) {
     var firstImageData;
     for (var media of props.post.gallery_data.items) {
       if (props.post.media_metadata[media.media_id].status == 'valid') {
-        firstImageData = props.post.media_metadata[media.meda_id];
+        firstImageData = props.post.media_metadata[media.media_id];
         break;
       }
     }
