@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 export function SideBar(props) {
   const [sources, setSources] = useState([]);
+  const [editingSources, setEditingSources] = useState(false);
 
   const handleValueChange = (newSourceString, index) => {
     setSources(sources.map((v,i) => {
@@ -56,7 +57,7 @@ export function SideBar(props) {
             <i style={{fontSize: '25px', margin: '5px 10px 0px 0px'}} className='bi bi-x-lg' onClick={props.closePanel}/>
         </div>
         <p style={{margin: 5}}>Add any sources such as...</p>
-        <ul style={{margin: 5}}>
+        <ul style={{margin: '5px 5px 15px 5px'}}>
             <li>Subreddit (eg '/r/funny')</li>
             <li>Public multireddit (eg '/u/soupyhands/m/climbing')</li>
             <li>Multiple subreddits (eg '/r/funny+gifs+videos')</li>
@@ -68,20 +69,38 @@ export function SideBar(props) {
             <div key={index} style={{display: 'flex'}}>
                 <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.sourceString}
                         onChange={e => handleValueChange(e.target.value, index)}/>
-                {/*Select source*/}
-                <button style={{margin: 5}} onClick={() => selectSource(index)}>
-                    <i style={{fontSize: '20px'}} className={`bi bi-circle${source.selected ? '-fill' : ''}`}/>
-                </button>
-                {/*Delete source*/}
-                <button style={{margin: 5}} onClick={() => deleteSource(index)}>
-                    <i style={{fontSize: '20px'}} className='bi bi-trash'/>
-                </button>
+                {editingSources ?
+                  <Fragment>
+                    {/*Reorder source*/}
+                    <button style={{margin: 5}}>{/*Todo: add beautiful dnd */}
+                      <i style={{fontSize: '20px'}} className='bi bi-list'/>
+                    </button>
+                    {/*Delete source*/}
+                    <button style={{margin: 5}} onClick={() => deleteSource(index)}>
+                      <i style={{fontSize: '20px'}} className='bi bi-trash'/>
+                    </button>
+                  </Fragment>
+                :
+                  <Fragment>
+                    {/*Select source*/}
+                    <button style={{margin: 5}} onClick={() => selectSource(index)}>
+                      <i style={{fontSize: '20px'}} className={`bi bi-circle${source.selected ? '-fill' : ''}`}/>
+                    </button>
+                  </Fragment>
+                }
             </div>
         )}
-        <button style={{margin: 5, width: 200, alignSelf: 'center'}} onClick={() => addSource()}>
-            <i style={{fontSize: '25px'}} className='bi bi-plus'/>
-        </button>
-        <button style={{margin: '40px 5px 5px 5px', height: 40}} onClick={saveChanges}>
+        <div style={{display: 'flex', justifyContent: 'end'}}>
+          <button style={{margin: 5, width: 40}} onClick={() => addSource()}>
+              <i style={{fontSize: '25px'}} className='bi bi-plus'/>
+          </button>
+          {sources.length > 0 ? 
+            <button style={{margin: 5, width: 40}} onClick={() => setEditingSources(!editingSources)}>
+              <i style={{fontSize: '20px'}} className={`bi bi-${editingSources ? 'check-lg' : 'pencil'}`}/>
+            </button>
+          :null}
+        </div>
+        <button style={{margin: '25px 5px 5px 5px', height: 40}} onClick={saveChanges}>
                 Save
         </button>
         <div style={{flex: '1 0 0'}}/>
