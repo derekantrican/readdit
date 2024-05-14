@@ -36,6 +36,7 @@ export function SideBar(props) {
     setSources(sources.concat({
         sourceString : '',
         selected : sources.length == 0, //Select the source by default if it is the only one
+        id : crypto.randomUUID(),
     }));
   };
 
@@ -50,7 +51,7 @@ export function SideBar(props) {
   }, []);
 
   const onDragEnd = result => {
-    const { destination, source, draggableId } = result;
+    const { destination, source } = result;
     if (!destination || destination.index == source.index) {
       return;
     }
@@ -81,17 +82,17 @@ export function SideBar(props) {
             {droppableProvided=> (
               <div style={{display: 'flex', flexDirection: 'column'}} ref={droppableProvided.innerRef} {...droppableProvided.droppableProps}>
                 {sources.map((source, index) =>
-                  <Draggable key={source.sourceString} draggableId={source.sourceString} index={index} isDragDisabled={!editingSources}>
+                  <Draggable key={source.id} draggableId={source.id} index={index} isDragDisabled={!editingSources}>
                     {draggableProvided => (
-                      <div key={index} ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}
+                      <div ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}
                         style={{display: 'flex' /*style needs to be after draggableProps*/, ...draggableProvided.draggableProps.style}}>
                         <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.sourceString}
                                 onChange={e => handleValueChange(e.target.value, index)}/>
                         {editingSources ?
                           <Fragment>
                             {/*Reorder source*/}
-                            <i {...draggableProvided.dragHandleProps} 
-                              style={{fontSize: '25px', textAlign: 'center', width: 25, padding: 5, ...draggableProvided.dragHandleProps.style}} 
+                            <i {...draggableProvided.dragHandleProps}
+                              style={{fontSize: '25px', textAlign: 'center', width: 25, padding: 5, ...draggableProvided.dragHandleProps.style}}
                               className='bi bi-list'/>
                             {/*Delete source*/}
                             <button style={{margin: 5}} onClick={() => deleteSource(index)}>
