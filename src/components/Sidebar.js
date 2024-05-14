@@ -1,3 +1,4 @@
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Fragment, useEffect, useState } from "react";
 
 export function SideBar(props) {
@@ -48,6 +49,16 @@ export function SideBar(props) {
     setSources(JSON.parse(localStorage.getItem('sources')) ?? []);
   }, []);
 
+  const onDragEnd = result => {
+    const { destination, source, draggableId } = result;
+    if (!destination || destination.index == source.index) {
+      return;
+    }
+
+    sources.splice(destination.index, 0, sources.splice(source.index, 1)[0]); //This moves an item from one index to another
+    setSources(sources);
+  };
+
   return (
     <div className={props.isOpen ? "sidebar open" : "sidebar"}>
       <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
@@ -65,31 +76,45 @@ export function SideBar(props) {
         {sources.length == 0 ? 
             <div style={{color: 'yellow', margin: 10}}>No sources (defaulting to '/r/all'). Click '+' to add one!</div>
         :null}
-        {sources.map((source, index) =>
-            <div key={index} style={{display: 'flex'}}>
-                <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.sourceString}
-                        onChange={e => handleValueChange(e.target.value, index)}/>
-                {editingSources ?
-                  <Fragment>
-                    {/*Reorder source*/}
-                    <button style={{margin: 5}}>{/*Todo: add beautiful dnd */}
-                      <i style={{fontSize: '20px'}} className='bi bi-list'/>
-                    </button>
-                    {/*Delete source*/}
-                    <button style={{margin: 5}} onClick={() => deleteSource(index)}>
-                      <i style={{fontSize: '20px'}} className='bi bi-trash'/>
-                    </button>
-                  </Fragment>
-                :
-                  <Fragment>
-                    {/*Select source*/}
-                    <button style={{margin: 5}} onClick={() => selectSource(index)}>
-                      <i style={{fontSize: '20px'}} className={`bi bi-circle${source.selected ? '-fill' : ''}`}/>
-                    </button>
-                  </Fragment>
-                }
-            </div>
-        )}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="droppable">
+            {droppableProvided=> (
+              <div style={{display: 'flex', flexDirection: 'column'}} ref={droppableProvided.innerRef} {...droppableProvided.droppableProps}>
+                {sources.map((source, index) =>
+                  <Draggable key={source.sourceString} draggableId={source.sourceString} index={index} isDragDisabled={!editingSources}>
+                    {draggableProvided => (
+                      <div key={index} ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}
+                        style={{display: 'flex' /*style needs to be after draggableProps*/, ...draggableProvided.draggableProps.style}}>
+                        <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.sourceString}
+                                onChange={e => handleValueChange(e.target.value, index)}/>
+                        {editingSources ?
+                          <Fragment>
+                            {/*Reorder source*/}
+                            <i {...draggableProvided.dragHandleProps} 
+                              style={{fontSize: '25px', textAlign: 'center', width: 25, padding: 5, ...draggableProvided.dragHandleProps.style}} 
+                              className='bi bi-list'/>
+                            {/*Delete source*/}
+                            <button style={{margin: 5}} onClick={() => deleteSource(index)}>
+                              <i style={{fontSize: '20px'}} className='bi bi-trash'/>
+                            </button>
+                          </Fragment>
+                        :
+                          <Fragment>
+                            {/*Select source*/}
+                            <button style={{margin: 5}} onClick={() => selectSource(index)}>
+                              <i style={{fontSize: '20px'}} className={`bi bi-circle${source.selected ? '-fill' : ''}`}/>
+                            </button>
+                          </Fragment>
+                        }
+                      </div>
+                    )}
+                  </Draggable>
+                )}
+                {droppableProvided.placeholder /*used to create space for drag-drop*/}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
         <div style={{display: 'flex', justifyContent: 'end'}}>
           <button style={{margin: 5, width: 40}} onClick={() => addSource()}>
               <i style={{fontSize: '25px'}} className='bi bi-plus'/>
