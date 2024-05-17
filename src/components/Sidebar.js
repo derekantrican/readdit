@@ -126,6 +126,7 @@ export function SideBar(props) {
             </button>
           :null}
         </div>
+        {/*Todo: because the sidebar can't be scrolled, there is a problem with too many sources "pushing out" the Save button*/}
         <button style={{margin: '25px 5px 5px 5px', height: 40}} onClick={saveChanges}>
                 Save
         </button>
