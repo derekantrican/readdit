@@ -23,6 +23,7 @@ function PostListing(props) {
         <EmbedContainer post={props.post}/>
         <div style={{display: 'flex', marginTop: 5}}>
           <i style={{fontSize: 20, textAlign: 'center', flex: '1 1 0'}} className='bi bi-share' onClick={() => sharePost(props.post.title, props.post.url)}/>
+          <i style={{fontSize: 20, textAlign: 'center', flex: '1 1 0'}} className='bi bi-x-lg' onClick={() => props.hidePost(props.post.id)}/>
           {props.isDevMode ? 
             <a style={{color: 'white', textAlign: 'center', flex: '1 1 0'}} href={`https://github.com/derekantrican/readdit/issues/new?title=Problem+with+post&body=${encodeURIComponent(props.post.permalink)}`}>
               <i style={{fontSize: 20}} className='bi bi-bug'/>

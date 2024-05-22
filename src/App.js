@@ -13,6 +13,8 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [nextToken, setNextToken] = useState(null);
 
+  const [hiddenPosts, setHiddenPosts] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [postData, setPostData] = useState(null);
@@ -28,6 +30,8 @@ function App() {
     }
 
     setIsDevMode(localStorage.getItem('dev') == 'true');
+
+    setHiddenPosts(JSON.parse(localStorage.getItem('hiddenPosts')) ?? []);
 
     navigateSource(window.location.pathname);
   }, []);
@@ -124,6 +128,12 @@ function App() {
     }
   };
 
+  const hidePost = (id) => {
+    const newHiddenPosts = hiddenPosts.concat([id]);
+    setHiddenPosts(newHiddenPosts);
+    localStorage.setItem('hiddenPosts', JSON.stringify(newHiddenPosts));
+  };
+
   useEffect(() => {
     window.addEventListener('scroll', saveScrollPosition);
     return () => window.removeEventListener('scroll', saveScrollPosition);
@@ -140,10 +150,12 @@ function App() {
               navigateSource(null); //Navigating to an empty source will pull from localStorage
             }}/>
             <div style={{paddingTop: 55}}>
-              {posts.map(p => 
-                <PostListing key={p.id} post={p} isDevMode={isDevMode} openPost={() => {
-                  setLastSourceString(sourceString);
-                  navigateSource(p.permalink);
+              {posts.filter(p => !hiddenPosts.includes(p.id)).map(p => 
+                <PostListing key={p.id} post={p} isDevMode={isDevMode}
+                  hidePost={(id) => hidePost(id)}
+                  openPost={() => {
+                    setLastSourceString(sourceString);
+                    navigateSource(p.permalink);
                 }}/>
               )}
             </div>
