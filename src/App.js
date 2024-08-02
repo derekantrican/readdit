@@ -28,6 +28,9 @@ function App() {
       localStorage.setItem('dev', 'true');
       alert('Dev mode has been turned on');
     }
+    else if (window.location.pathname.endsWith('/auth')) {
+      console.log("Query:", window.location.search);
+    }
 
     setIsDevMode(localStorage.getItem('dev') == 'true');
 
