@@ -1,5 +1,6 @@
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Fragment, useEffect, useState } from "react";
+import { generateAuthUrl } from "../utils/authUser";
 
 export function SideBar(props) {
   const [sources, setSources] = useState([]);
@@ -117,6 +118,10 @@ export function SideBar(props) {
           </Droppable>
         </DragDropContext>
         <div style={{display: 'flex', justifyContent: 'end'}}>
+          <button style={{margin: 5, width: 100, backgroundColor: '#0202ba', borderColor: 'transparent', borderRadius: '10%'}}
+            onClick={() => window.location.replace(generateAuthUrl())}>
+            Auth reddit
+          </button>
           <button style={{margin: 5, width: 40}} onClick={() => addSource()}>
               <i style={{fontSize: '25px'}} className='bi bi-plus'/>
           </button>

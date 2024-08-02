@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import PostListing from './components/PostListing';
 import PostDetail from './components/PostDetail';
 import SideBar from './components/Sidebar';
+import { authUser } from './utils/authUser';
 
 const cache = {};
 
@@ -29,7 +30,7 @@ function App() {
       alert('Dev mode has been turned on');
     }
     else if (window.location.pathname.endsWith('/auth')) {
-      console.log("Query:", window.location.search);
+      authUser(window.location.search);
     }
 
     setIsDevMode(localStorage.getItem('dev') == 'true');
@@ -79,7 +80,23 @@ function App() {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(url);
+      let response = null;
+      if (requestPath.includes('oauth')) {
+        var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
+        var matchingSource = localStorageSources.find(s => s.sourceString = requestPath); //Todo: we shouldn't need to read from localStorage again - this should be in a common place
+  
+        response = await fetch(requestPath, {
+          headers: {
+            Authorization: `Bearer ${matchingSource.access_token}`,
+          }
+        });
+
+        //Todo: refresh token if it has expired
+      }
+      else {
+        response = await fetch(url);
+      }
+
 
       if (!response.ok) {
         throw new Error('Failed to fetch');
