@@ -83,7 +83,7 @@ function App() {
       let response = null;
       if (requestPath.includes('oauth.reddit.com')) {
         var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
-        var matchingSource = localStorageSources.find(s => s.sourceString = requestPath); //Todo: we shouldn't need to read from localStorage again - this should be in a common place
+        var matchingSource = localStorageSources.find(s => s.sourceString == requestPath); //Todo: we shouldn't need to read from localStorage again - this should be in a common place
   
         response = await fetch(requestPath, {
           headers: {
@@ -132,7 +132,7 @@ function App() {
           setPostData(data);
         }
         else if (data) {
-          setPosts(data.data.children.map(p => p.data));
+          setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
           window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
         }
         // setNextToken(data.data.after); //Todo: user next token
