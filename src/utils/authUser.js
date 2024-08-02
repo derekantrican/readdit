@@ -67,8 +67,8 @@ export async function authUser(authQuery) {
           Authorization: `Bearer ${data.access_token}`,
         }
       });
-      const username = (await meResponse.json()).name;
       if (meResponse.ok) {
+        const username = (await meResponse.json()).name;
         currentSources.push({
           sourceString : `${username}'s Saves`,
           url : `https://oauth.reddit.com/user/${username}/saved`, //We'll just save the url needed for the request and use it directly
