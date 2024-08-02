@@ -87,7 +87,7 @@ export function SideBar(props) {
                     {draggableProvided => (
                       <div ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}
                         style={{display: 'flex' /*style needs to be after draggableProps*/, ...draggableProvided.draggableProps.style}}>
-                        <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.sourceString}
+                        <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.title ?? source.sourceString}
                                 onChange={e => handleValueChange(e.target.value, index)}/>
                         {editingSources ?
                           <Fragment>

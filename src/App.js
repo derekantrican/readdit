@@ -81,7 +81,7 @@ function App() {
       setError(null);
 
       let response = null;
-      if (!requestPath.includes('reddit.com') /*Todo: later this should be 'if (source.url)' when we can load the source object directly*/) {
+      if (requestPath.includes('oauth.reddit.com')) {
         var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
         var matchingSource = localStorageSources.find(s => s.sourceString = requestPath); //Todo: we shouldn't need to read from localStorage again - this should be in a common place
   

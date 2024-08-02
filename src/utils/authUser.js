@@ -70,8 +70,8 @@ export async function authUser(authQuery) {
       if (meResponse.ok) {
         const username = (await meResponse.json()).name;
         currentSources.push({
-          sourceString : `${username}'s Saves`,
-          url : `https://oauth.reddit.com/user/${username}/saved`, //We'll just save the url needed for the request and use it directly
+          title : `${username}'s Saves`,
+          sourceString : `https://oauth.reddit.com/user/${username}/saved`, //We'll just save the url needed for the request and use it directly
           access_token : data.access_token,
           refresh_token : data.refresh_token,
           selected : false,
