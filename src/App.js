@@ -123,7 +123,7 @@ function App() {
       if (sourceString) {
         setPostData(null); //reset
 
-        if (process.env.NODE_ENV == 'production') {
+        if (process.env.NODE_ENV == 'production' && !sourceString.includes('oauth.reddit.com')) {
           window.history.pushState({}, null, baseUrl() + sourceString);
         }
 
