@@ -62,7 +62,11 @@ export async function authUser(authQuery) {
       }
 
       //Get user saves
-      const meResponse = await fetch('https://oauth.reddit.com/api/v1/me');
+      const meResponse = await fetch('https://oauth.reddit.com/api/v1/me', {
+        headers: {
+          Authorization: `Bearer ${data.access_token}`,
+        }
+      });
       const username = (await meResponse.json()).name;
       if (meResponse.ok) {
         currentSources.push({
@@ -75,7 +79,7 @@ export async function authUser(authQuery) {
         });
       }
 
-      localStorage.setItem('sources', JSON.stringify(currentSources));
+      localStorage.setItem('sources', JSON.stringify(currentSources)); //Todo: this doesn't update the Sidebar listings
 
       alert('Successfully authorized account with readdit!\n\nCheck the settings panel to switch to your subs or saves');
     }
