@@ -83,8 +83,10 @@ function App() {
       let response = null;
       if (requestPath.includes('oauth.reddit.com')) {
         var matchingSource = LocalStorageSources.find(s => s.sourceString == requestPath);
-  
-        if (!matchingSource.expiration_date || matchingSource.expiration_date < new Date()) {
+        console.log('matchingSource:', matchingSource);
+
+        if (matchingSource.expiration_date && matchingSource.expiration_date < new Date()) {
+          console.log("matchingSource's access_token is expired");
           const refreshData = refreshToken(matchingSource.refresh_token);
 
           matchingSource.access_token = refreshData.access_token;
