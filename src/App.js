@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import PostListing from './components/PostListing';
 import PostDetail from './components/PostDetail';
 import SideBar from './components/Sidebar';
-import { authUser } from './utils/authUser';
+import { authUser, calculateExpiration, refreshToken } from './utils/authUser';
+import { LocalStorageSources, saveSources } from './utils/sourcesManager';
 
 const cache = {};
 
@@ -41,14 +42,13 @@ function App() {
   }, []);
 
   const navigateSource = (src) => {
-    var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
     var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
     var resolvedSourceString;
     if (allowedSourceMatch) {
       resolvedSourceString = allowedSourceMatch[0];
     }
-    else if (localStorageSources.length > 0) {
-      resolvedSourceString = localStorageSources.find(s => s.selected).sourceString;
+    else if (LocalStorageSources.length > 0) {
+      resolvedSourceString = LocalStorageSources.find(s => s.selected).sourceString;
     }
     else {
       resolvedSourceString = '/r/all';
@@ -82,16 +82,23 @@ function App() {
 
       let response = null;
       if (requestPath.includes('oauth.reddit.com')) {
-        var localStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
-        var matchingSource = localStorageSources.find(s => s.sourceString == requestPath); //Todo: we shouldn't need to read from localStorage again - this should be in a common place
+        var matchingSource = LocalStorageSources.find(s => s.sourceString == requestPath); //Todo: we shouldn't need to read from localStorage again - this should be in a common place
   
+        if (!matchingSource.expiration_date || matchingSource.expiration_date < new Date()) {
+          const refreshData = refreshToken(matchingSource.refresh_token);
+
+          matchingSource.access_token = refreshData.access_token;
+          matchingSource.expiration_date = calculateExpiration(refreshData.expires_in);
+          matchingSource.refresh_token = refreshData.refresh_token;
+          
+          saveSources();
+        }
+
         response = await fetch(requestPath, {
           headers: {
             Authorization: `Bearer ${matchingSource.access_token}`,
           }
         });
-
-        //Todo: refresh token if it has expired
       }
       else {
         response = await fetch(url);

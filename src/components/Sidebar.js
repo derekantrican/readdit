@@ -1,6 +1,7 @@
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Fragment, useEffect, useState } from "react";
 import { generateAuthUrl } from "../utils/authUser";
+import { LocalStorageSources, readSources, saveSources } from "../utils/sourcesManager";
 
 export function SideBar(props) {
   const [sources, setSources] = useState([]);
@@ -43,12 +44,14 @@ export function SideBar(props) {
 
   const saveChanges = () => {
     //Todo: validate source strings (use the regex in App.navigateSource) and show validation errors
-    localStorage.setItem('sources', JSON.stringify(sources));
+    LocalStorageSources = sources;
+    saveSources();
     props.closePanel();
   };
   
   useEffect(() => {
-    setSources(JSON.parse(localStorage.getItem('sources')) ?? []);
+    readSources();
+    setSources(LocalStorageSources);
   }, []);
 
   const onDragEnd = result => {
