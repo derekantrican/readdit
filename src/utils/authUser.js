@@ -42,7 +42,6 @@ export async function authUser(authQuery) {
 
   if (response.ok) {
     const data = await response.json();
-    console.log('authUser data:', data);
     
     if (data.access_token) {
       //Get user subs
@@ -106,7 +105,6 @@ export async function refreshToken(refresh_token) {
 
   if (response.ok) {
     const data = await response.json();
-    console.log('refreshToken data:', data);
 
     if (data.access_token) {
       return data;
