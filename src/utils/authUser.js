@@ -70,7 +70,7 @@ export async function authUser(authQuery) {
         const username = (await meResponse.json()).name;
         LocalStorageSources.push({
           title : `${username}'s Saves`,
-          sourceString : `https://oauth.reddit.com/user/${username}/saved`, //We'll just save the url needed for the request and use it directly
+          sourceString : `https://oauth.reddit.com/user/${username}/saved.json?limit=100&raw_json=1`, //We'll just save the url needed for the request and use it directly
           access_token : data.access_token,
           refresh_token : data.refresh_token,
           expiration_date : calculateExpiration(data.expires_in),
