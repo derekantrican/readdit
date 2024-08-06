@@ -85,7 +85,7 @@ function App() {
         var matchingSource = LocalStorageSources.find(s => s.sourceString == requestPath);
         console.log('matchingSource:', matchingSource);
 
-        if (matchingSource.expiration_date && matchingSource.expiration_date < new Date()) {
+        if (matchingSource.expiration_date && new Date(matchingSource.expiration_date) < new Date()) {
           console.log("matchingSource's access_token is expired");
           const refreshData = refreshToken(matchingSource.refresh_token);
 
