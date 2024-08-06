@@ -90,7 +90,7 @@ function App() {
 
         if (matchingSource.expiration_date && new Date(matchingSource.expiration_date) < new Date()) {
           console.log("matchingSource's access_token is expired");
-          const refreshData = refreshToken(matchingSource.refresh_token);
+          const refreshData = await refreshToken(matchingSource.refresh_token);
 
           matchingSource.access_token = refreshData.access_token;
           matchingSource.expiration_date = calculateExpiration(refreshData.expires_in);
