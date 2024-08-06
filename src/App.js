@@ -82,7 +82,7 @@ function App() {
 
       let response = null;
       if (requestPath.includes('oauth.reddit.com')) {
-        var matchingSource = LocalStorageSources.find(s => s.sourceString == requestPath); //Todo: we shouldn't need to read from localStorage again - this should be in a common place
+        var matchingSource = LocalStorageSources.find(s => s.sourceString == requestPath);
   
         if (!matchingSource.expiration_date || matchingSource.expiration_date < new Date()) {
           const refreshData = refreshToken(matchingSource.refresh_token);
