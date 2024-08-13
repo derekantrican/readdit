@@ -75,7 +75,8 @@ function Comment(props) {
         </div>
         <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 10, overflowWrap: 'anywhere'}}>
           <Markdown remarkPlugins={[remarkGfm]}>{props.comment.data.body}</Markdown>
-          {props.comment.data.replies
+          {props.comment.data.replies && 
+            props.comment.data.replies.data.children[0].kind != 'more' //Todo: there *are* more comments here, but we can't currently handle them. So this will hide the "Replies" button for now
             ? <button style={{width: 80, alignSelf: 'end'}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>
             : null
           }
