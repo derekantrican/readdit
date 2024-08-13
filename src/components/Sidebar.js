@@ -44,8 +44,7 @@ export function SideBar(props) {
 
   const saveChanges = () => {
     //Todo: validate source strings (use the regex in App.navigateSource) and show validation errors
-    LocalStorageSources = sources;
-    saveSources();
+    saveSources(sources);
     props.closePanel();
   };
   

@@ -4,7 +4,7 @@ import PostListing from './components/PostListing';
 import PostDetail from './components/PostDetail';
 import SideBar from './components/Sidebar';
 import { authUser, calculateExpiration, refreshToken } from './utils/authUser';
-import { LocalStorageSources, saveSources } from './utils/sourcesManager';
+import { LocalStorageSources, readSources, saveSources } from './utils/sourcesManager';
 
 const cache = {};
 
@@ -42,6 +42,8 @@ function App() {
   }, []);
 
   const navigateSource = (src) => {
+    readSources();
+
     var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
     var resolvedSourceString;
     if (allowedSourceMatch) {

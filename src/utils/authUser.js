@@ -79,7 +79,7 @@ export async function authUser(authQuery) {
         });
       }
 
-      saveSources(); //Todo: this doesn't update the Sidebar listings
+      saveSources(LocalStorageSources); //Todo: this doesn't update the Sidebar listings
 
       alert('Successfully authorized account with readdit!\n\nCheck the settings panel to switch to your subs or saves');
     }
