@@ -69,13 +69,23 @@ function App() {
     setSourceString(resolvedSourceString);
   }
 
-  const getRedditData = async (requestPath) => {
-    const url = `https://www.reddit.com${requestPath}/.json?limit=${process.env.NODE_ENV != 'production' ? 30 : 100}&raw_json=1`;
+  const getRedditData = async (requestPath, postNextToken) => {
+    const urlParams = `limit=${process.env.NODE_ENV != 'production' ? 30 : 100}` +
+    `${postNextToken ? `&after=${postNextToken}` : ''}` +
+    `&raw_json=1`;
+
+    let url = null;
+    if (requestPath.includes('oauth.reddit.com')) {
+      url = `${requestPath}?${urlParams}`;
+    }
+    else {
+      url = `https://www.reddit.com${requestPath}/.json?${urlParams}`;
+    }
 
     const decayTime = 15 * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
     
-    if (cache[requestPath] && (new Date() - cache[requestPath].updated) < decayTime) {
-      return cache[requestPath].data;
+    if (cache[url] && (new Date() - cache[url].updated) < decayTime) {
+      return cache[url].data;
     }
 
     try {
@@ -93,10 +103,10 @@ function App() {
           matchingSource.expiration_date = calculateExpiration(refreshData.expires_in);
           matchingSource.refresh_token = refreshData.refresh_token;
           
-          saveSources();
+          saveSources(LocalStorageSources);
         }
 
-        response = await fetch(requestPath, {
+        response = await fetch(url, {
           headers: {
             Authorization: `Bearer ${matchingSource.access_token}`,
           }
@@ -143,8 +153,9 @@ function App() {
         else if (data) {
           setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
           window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
+
+          setNextToken(data.data.after);
         }
-        // setNextToken(data.data.after); //Todo: user next token
       }
     }
     
@@ -161,6 +172,15 @@ function App() {
     const newHiddenPosts = hiddenPosts.concat([id]);
     setHiddenPosts(newHiddenPosts);
     localStorage.setItem('hiddenPosts', JSON.stringify(newHiddenPosts));
+  };
+
+  const loadMorePosts = async () => {
+    const data = await getRedditData(sourceString, nextToken);
+    if (data) {
+      setPosts(posts.concat(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data)));
+
+      setNextToken(data.data.after);
+    }
   };
 
   useEffect(() => {
@@ -187,8 +207,11 @@ function App() {
                     navigateSource(p.permalink);
                 }}/>
               )}
+              {posts.length > 0 //Don't show the "Load More" button until the posts have loaded
+                ? <button style={{display: 'block', width: 'calc(100% - 10px)', margin: '10px 5px', height: 40}} onClick={loadMorePosts}>Load More</button>
+                : null
+              }
             </div>
-          {/*Could* have a "Load More" that uses nextToken (but 100 posts is probably enough for me)*/}
           </div>
         : postData ? <PostDetail data={postData} close={() => {
           navigateSource(lastSourceString);
