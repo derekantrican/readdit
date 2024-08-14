@@ -122,11 +122,11 @@ function App() {
       }
 
       const data = await response.json();
-      cache[requestPath] = {
+      cache[url] = {
         data,
         updated : new Date(),
       };
-      return cache[requestPath].data;
+      return cache[url].data;
     }
     catch (e) {
       setError(e);
