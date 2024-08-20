@@ -1,6 +1,6 @@
 import ImageGallery from "./ImageGallery";
 import RedditVideoPlayer from "./reddit-video";
-import RedGifsPlayer from "./redgifs";
+import {RedGifsPlayer, RedGifsWrapper} from "./redgifs";
 
 function EmbedContainer(props) {
   const sizeRatio = props.post.thumbnail_height / props.post.thumbnail_width;
@@ -52,7 +52,9 @@ function EmbedContainer(props) {
     }
     else if (props.post.url.includes('redgifs') && !props.post.url.includes('i.redgifs.com') /*Allow static images to be handled as any other static image*/) {
       return (
-        <RedGifsPlayer height={height} url={props.post.url}/>
+        <RedGifsWrapper>
+          <RedGifsPlayer height={height} url={props.post.url}/>
+        </RedGifsWrapper>
       );
     }
     else if (props.post.is_gallery) {
