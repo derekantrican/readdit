@@ -1,91 +1,34 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-const RedGifsContext = createContext();
+let token = null;
 
-let tokenPromise = null; // Singleton pattern for token fetching
-
-async function fetchToken() {
-  if (tokenPromise) {
-    return tokenPromise;
-  }
-
-  tokenPromise = (async () => {
-    const response = await fetch('https://api.redgifs.com/v2/auth/temporary');
-    const responseJson = await response.json();
-    return responseJson.token;
-  })();
-
-  return tokenPromise;
-}
-
-function RedGifsProvider({ children }) {
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    fetchToken().then(setToken);
-  }, []);
-
-  return (
-    <RedGifsContext.Provider value={token}>
-      {children}
-    </RedGifsContext.Provider>
-  );
-}
-
-function useRedGifsToken() {
-  return useContext(RedGifsContext);
-}
-
-export function RedGifsWrapper({ children }) {
-  return (
-    <RedGifsProvider>
-      {children}
-    </RedGifsProvider>
-  );
-}
-
-export function RedGifsPlayer(props) {
-  const token = useRedGifsToken();
-
-  const [directLink, setDirectLink] = useState(null);
-  const [height, setHeight] = useState(0);
+function RedGifsPlayer(props) {
+  //Todo: I would prefer to get the direct link. Looks like I can do that by getting a temporary token, then calling the API: 
+  // https://github.com/yt-dlp/yt-dlp/blob/0b6f829b1dfda15d3c1d7d1fbe4ea6102c26dd24/yt_dlp/extractor/redgifs.py#L68
 
   useEffect(() => {
     async function getDirectLink() {
-      const id = parseRedGifsId(props.url)
-      if (id == null) {
-        console.log(`Unable to parse id for url ${props.url}`);
-        return;
+      if (!token) {
+        const response = await fetch('https://api.redgifs.com/v2/auth/temporary');
+        const responseJson = await response.json();
+        token = responseJson.token;
       }
 
-      const response = await fetch(`https://api.redgifs.com/v2/gifs/${id}`, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        }
-      });
-
-      const responseJson = await response.json();
-      setDirectLink(responseJson.gif.urls.hd);
-      setHeight(responseJson.gif.height * ((window.screen.width - 30) / responseJson.gif.width)); //Set scaled height
+      //Todo: fetch the direct link
     }
 
-    if (token) {
-      getDirectLink();
-    }
-  }, [token]);
+    getDirectLink();
+  }, []);
 
   const parseRedGifsId = (url) => {
-    var regExp = /redgifs\.com\/(watch|ifr)\/(\w*)/;
+    var regExp = /redgifs\.com\/watch\/(\w*)/;
     var match = url.match(regExp);
-    return match && match[2];
+    return match && match[1];
   }
-
+  
   return (
-    <div>
-      {token != null
-        ? <video height={height} width='100%' src={directLink} controls></video>
-        : null
-      }
-    </div>
-  )
+    <iframe height={props.height} width='100%' style={{marginTop: 10}} allowFullScreen sandbox src={`https://redgifs.com/ifr/${parseRedGifsId(props.url)}`}/>
+  );
 }
+
+export default RedGifsPlayer;
