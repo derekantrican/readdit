@@ -84,8 +84,8 @@ function App() {
 
     const decayTime = 15 * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
     
-    if (cache[url] && (new Date() - cache[url].updated) < decayTime) {
-      return cache[url].data;
+    if (cache[requestPath] && (!postNextToken || (cache[requestPath].nextTokens ?? []).includes(postNextToken)) && (new Date() - cache[requestPath].updated) < decayTime) {
+      return cache[requestPath].data;
     }
 
     try {
@@ -122,11 +122,22 @@ function App() {
       }
 
       const data = await response.json();
-      cache[url] = {
-        data,
-        updated : new Date(),
-      };
-      return cache[url].data;
+
+      if (postNextToken) {
+        cache[requestPath].data.data.children = cache[requestPath].data.data.children.concat(data.data.children); //Concat the "nextToken posts" with the previous ones
+        cache[requestPath].nextTokens = (cache[requestPath].nextTokens ?? []).concat([postNextToken]);
+
+        return data; //Return only this next page of posts (because 'loadMorePosts' is expecting only this next page)
+      }
+      else {
+        cache[requestPath] = {
+          data,
+          updated : new Date(),
+        };
+
+        return cache[requestPath].data;
+      }
+
     }
     catch (e) {
       setError(e);
@@ -152,10 +163,10 @@ function App() {
         }
         else if (data) {
           setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
-          window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
-
           setNextToken(data.data.after);
         }
+
+        window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
       }
     }
     
