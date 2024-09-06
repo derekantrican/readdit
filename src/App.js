@@ -160,13 +160,13 @@ function App() {
         const data = await getRedditData(sourceString);
         if (sourceString.includes('/comments/')) {
           setPostData(data);
+          window.scrollTo({top: 0, left: 0, behavior: 'instant'}); //Reset scroll position for comments view
         }
         else if (data) {
           setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
           setNextToken(data.data.after);
+          window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
         }
-
-        window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
       }
     }
     
