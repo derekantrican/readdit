@@ -167,15 +167,32 @@ function App() {
           setNextToken(data.data.after);
           window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
         }
+
+        if (data) {
+          restoreScrollPosition();
+        }
       }
     }
     
     getPosts();
   }, [sourceString]);
 
+  const restoreScrollPosition = () => {
+    if (sourceString) {
+      if (sourceString.includes('/comments/')) {
+        window.scrollTo({top: 0, left: 0, behavior: 'instant'}); //Reset scroll position for comments view
+      }
+      else {
+        window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
+      }
+    }
+  };
+
   const saveScrollPosition = () => {
-    if (cache[sourceString]) {
-      cache[sourceString].scrollY = window.scrollY;
+    if (!panelOpen) { //Don't save the scroll position if the sidepanel is open
+      if (cache[sourceString]) {
+        cache[sourceString].scrollY = window.scrollY;
+      }
     }
   };
 
@@ -189,7 +206,6 @@ function App() {
     const data = await getRedditData(sourceString, nextToken);
     if (data) {
       setPosts(posts.concat(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data)));
-
       setNextToken(data.data.after);
     }
   };
@@ -199,9 +215,16 @@ function App() {
     return () => window.removeEventListener('scroll', saveScrollPosition);
   }, [saveScrollPosition]);
 
+  useEffect(() => {
+    //Restore scroll position after sidepanel closes
+    //(I tried a few different methods, but this seemed to be the only one that worked)
+    if (!panelOpen) {
+      restoreScrollPosition();
+    }
+  }, [panelOpen]);
+
   return (
     <div className={panelOpen ? 'noscroll' : ''/*Don't allow the screen to scroll while the panel is open*/}>
-      {/*Todo: setting 'noscroll' (with 'height: 100%') causes the post scroll position to reset when the sidepanel is opened*/}
       {sourceString && !sourceString.includes('/comments/')
         ? <div>
             <Header togglePanel={() => setPanelOpen(!panelOpen)} isLoading={isLoading}/>
