@@ -75,7 +75,7 @@ export function SideBar(props) {
         <ul style={{margin: '5px 5px 15px 5px'}}>
             <li>Subreddit (eg '/r/funny')</li>
             <li>Public multireddit (eg '/u/soupyhands/m/climbing')</li>
-            <li>Multiple subreddits (eg '/r/funny+gifs+videos')</li>
+            <li>Multiple subreddits (eg '/r/funny+gifs+videos')</li>{/*Todo: I don't know if this format is really supported (seems that only the first sub is retrieved) */}
         </ul>
         {sources.length == 0 ? 
             <div style={{color: 'yellow', margin: 10}}>No sources (defaulting to '/r/all'). Click '+' to add one!</div>
