@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 function ImageGallery(props) {
   const [images, setImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  Array.prototype.max = function() {
+    return Math.max.apply(null, this);
+  };
+
+  const sizeRatio = Object.values(props.post.media_metadata).map(meta => meta.s.y / meta.s.x).max();
+  const height = sizeRatio * (window.screen.width - 30);
   
   useEffect(() => {
     const imageList = [];
@@ -29,8 +36,8 @@ function ImageGallery(props) {
 
   return (
     <div style={{position: 'relative', marginTop: 10}}>
-      {/*Todo: currently this causes the image block to change size whenever the image changes (if it's a different size)*/}
-      <img height='100%' width='100%' src={images[currentImageIndex]}/>
+      {/*Todo: images aren't loaded until the '->' button is clicked, so we should add some sort of loading indicator*/}
+      <img style={{objectFit: 'contain'}} height={height} width='100%' src={images[currentImageIndex]}/>
       {currentImageIndex > 0 ?
         <button style={{...buttonStyle, left: 5}} onClick={() => setCurrentImageIndex(currentImageIndex - 1)}>
           <i style={{fontSize: '25px'}} className='bi bi-arrow-left-short'/>

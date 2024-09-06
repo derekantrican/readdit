@@ -4,7 +4,6 @@ import RedGifsPlayer from "./redgifs";
 
 function EmbedContainer(props) {
   const sizeRatio = props.post.thumbnail_height / props.post.thumbnail_width;
-
   const height = sizeRatio * (window.screen.width - 30);
 
   //Todo:
