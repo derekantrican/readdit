@@ -65,7 +65,7 @@ export function SideBar(props) {
 
   return (
     <div className={props.isOpen ? "sidebar open" : "sidebar"}>
-      <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+      <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100vh - 55px)'}}>
         <div style={{display: 'flex'}}>
             <h2 style={{margin: 5}}>Sources</h2>
             <div style={{flex: '1 0 0'}}/>{/*Fill available space so close button is always at the far right*/}
@@ -83,7 +83,7 @@ export function SideBar(props) {
         <DragDropContext onDragEnd={onDragEnd}>
           <Droppable droppableId="droppable">
             {droppableProvided=> (
-              <div style={{display: 'flex', flexDirection: 'column'}} ref={droppableProvided.innerRef} {...droppableProvided.droppableProps}>
+              <div style={{display: 'flex', flexDirection: 'column', overflowY: 'scroll'}} ref={droppableProvided.innerRef} {...droppableProvided.droppableProps}>
                 {sources.map((source, index) =>
                   <Draggable key={source.id} draggableId={source.id} index={index} isDragDisabled={!editingSources}>
                     {draggableProvided => (
@@ -133,8 +133,7 @@ export function SideBar(props) {
             </button>
           :null}
         </div>
-        {/*Todo: because the sidebar can't be scrolled, there is a problem with too many sources "pushing out" the Save button*/}
-        <button style={{margin: '25px 5px 5px 5px', height: 40}} onClick={saveChanges}>
+        <button style={{margin: '25px 5px 5px 5px', minHeight: 40}} onClick={saveChanges}>
                 Save
         </button>
         <div style={{flex: '1 0 0'}}/>
