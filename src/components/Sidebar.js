@@ -68,8 +68,6 @@ export function SideBar(props) {
       <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100vh - 55px)'}}>
         <div style={{display: 'flex'}}>
             <h2 style={{margin: 5}}>Sources</h2>
-            <div style={{flex: '1 0 0'}}/>{/*Fill available space so close button is always at the far right*/}
-            <i style={{fontSize: '25px', margin: '5px 10px 0px 0px'}} className='bi bi-x-lg' onClick={props.closePanel}/>
         </div>
         <p style={{margin: 5}}>Add any sources such as...</p>
         <ul style={{margin: '5px 5px 15px 5px'}}>

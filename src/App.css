@@ -65,3 +65,37 @@ body,
     transform:  translateX(100%) scaleX(0.5);
   }
 }
+
+/* Styling the menu button */
+.menu-btn {
+  height: 45px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 10px;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
+
+/* Styling the hamburger lines */
+.menu-btn .btn-line {
+  width: 26px;
+  height: 3px;
+  margin: 3px 5px 3px 5px;
+  background: white;
+  transition: all 0.3s ease-out;
+}
+
+/* Styling the three lines to make it an X */
+.menu-btn.close .btn-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.menu-btn.close .btn-line:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-btn.close .btn-line:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}

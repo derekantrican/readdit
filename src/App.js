@@ -227,7 +227,7 @@ function App() {
     <div className={panelOpen ? 'noscroll' : ''/*Don't allow the screen to scroll while the panel is open*/}>
       {currentView == 'postList'
         ? <div>
-            <Header togglePanel={() => setPanelOpen(!panelOpen)} isLoading={isLoading}/>
+            <Header togglePanel={() => setPanelOpen(!panelOpen)} panelOpen={panelOpen} isLoading={isLoading}/>
             <SideBar isOpen={panelOpen} closePanel={() => {
               setPanelOpen(false);
               navigateSource(null); //Navigating to an empty source will pull from localStorage
@@ -284,7 +284,11 @@ function Header(props) {
   return (
     <div style={{position: 'fixed', top: 0, width: '100%', zIndex: 1000, display: isVisible ? 'flex' : 'none', flexDirection: 'column', height: 55}}>
       <div style={{display: 'flex',  alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
-        <i style={{fontSize: '35px', marginRight: 10}} className='bi bi-list' onClick={props.togglePanel}/>
+        <div className={`menu-btn ${props.panelOpen ? 'close' : ''}`} onClick={props.togglePanel}>
+          <div class="btn-line"></div>
+          <div class="btn-line"></div>
+          <div class="btn-line"></div>
+        </div>
         <h2 style={{margin: 0}}>Readdit</h2>
       </div>
       {props.isLoading ?
