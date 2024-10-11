@@ -60,8 +60,9 @@ function EmbedContainer(props) {
       );
     }
     else {
+      var imageSource = getImage();
       return (
-        <img height='100%' width='100%' style={{marginTop: 10}} src={getImage()}/>
+        imageSource ? <img height='100%' width='100%' style={{marginTop: 10}} src={imageSource}/> : null
       );
     }
   }

@@ -19,6 +19,7 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentView, setCurrentView] = useState('postList');
   const [postData, setPostData] = useState(null);
 
   const [isDevMode, setIsDevMode] = useState(false);
@@ -151,20 +152,19 @@ function App() {
   useEffect(() => {
     async function getPosts() {
       if (sourceString) {
-        setPostData(null); //reset
-
         if (process.env.NODE_ENV == 'production' && !sourceString.includes('oauth.reddit.com')) {
           window.history.pushState({}, null, baseUrl() + sourceString);
         }
 
         const data = await getRedditData(sourceString);
+        console.log(data);
         if (sourceString.includes('/comments/')) {
           setPostData(data);
-          window.scrollTo({top: 0, left: 0, behavior: 'instant'}); //Reset scroll position for comments view
         }
         else if (data) {
           setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
           setNextToken(data.data.after);
+          setCurrentView('postList');
           window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
         }
 
@@ -225,7 +225,7 @@ function App() {
 
   return (
     <div className={panelOpen ? 'noscroll' : ''/*Don't allow the screen to scroll while the panel is open*/}>
-      {sourceString && !sourceString.includes('/comments/')
+      {currentView == 'postList'
         ? <div>
             <Header togglePanel={() => setPanelOpen(!panelOpen)} isLoading={isLoading}/>
             <SideBar isOpen={panelOpen} closePanel={() => {
@@ -237,6 +237,10 @@ function App() {
                 <PostListing key={p.id} post={p} isDevMode={isDevMode}
                   hidePost={(id) => hidePost(id)}
                   openPost={() => {
+                    setPostData([{data:{children:[{data:p}]}}]); //set post data ahead of time (before postData is actually fetched)
+                    setCurrentView('postDetail');
+                    window.scrollTo({top: 0, left: 0, behavior: 'instant'}); //Reset scroll position for comments view
+                    
                     setLastSourceString(sourceString);
                     navigateSource(p.permalink);
                 }}/>
@@ -247,10 +251,14 @@ function App() {
               }
             </div>
           </div>
-        : postData ? <PostDetail data={postData} close={() => {
-          navigateSource(lastSourceString);
-          setLastSourceString(null);
-        }}/> : null
+        : currentView == 'postDetail'
+        ? <PostDetail 
+            data={postData}
+            close={() => {
+              navigateSource(lastSourceString);
+              setLastSourceString(null);
+          }}/> 
+        : null
       }
     </div>
   );

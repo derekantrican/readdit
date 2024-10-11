@@ -7,19 +7,23 @@ import EmbedContainer from './embeds/EmbedContainer';
 //is not the same as reddit (it expects '^this^` rather than just `^this` where each consecutive ^ increases the "superscript level")
 
 function PostDetail(props) {
-    return (
-      <div style={{display: 'flex', flexDirection: 'column', padding: 10}}>
-        <PostDetailHeader data={props.data[0].data.children[0].data /*The 'post data' section*/} close={props.close}/>
+  return (
+    <div style={{display: 'flex', flexDirection: 'column', padding: 10}}>
+      <PostDetailHeader data={props.data[0].data.children[0].data /*The 'post data' section*/} close={props.close}/>
 
-        <EmbedContainer post={props.data[0].data.children[0].data}/>
-        {/*Todo: make this full width*/}
-        {/*Todo: on the post comments page, we shouldn't be embedding ALL content (eg news site preview images)*/}
-        
-        <PostDetailComments data={props.data[1].data.children /*The 'comments' section*/}/>
-        {/*Todo: should comments scroll while leaving the header in place?*/}
-        
-      </div>
-    );
+      <EmbedContainer post={props.data[0].data.children[0].data}/>{/*Sometimes, the postListing data has an image and the postDetail does not - so the image goes away when the comments load*/}
+      {/*Todo: make this full width*/}
+      {/*Todo: on the post comments page, we shouldn't be embedding ALL content (eg news site preview images)*/}
+      {props.data.length > 1
+        ? <PostDetailComments data={props.data[1].data.children /*The 'comments' section*/}/>
+        : <div className="progress-bar" style={{marginTop: 5}}>{/*Show progress bar until comments are loaded*/}
+            <div className="progress-bar-value"/>
+          </div>
+      }
+      {/*Todo: should comments scroll while leaving the header in place?*/}
+      
+    </div>
+  );
 }
   
 function PostDetailHeader(props) {
