@@ -157,8 +157,8 @@ function App() {
         }
 
         const data = await getRedditData(sourceString);
-        console.log(data);
         if (sourceString.includes('/comments/')) {
+          setCurrentView('postDetail'); //This might be set already, but setting again in case someone is coming from a direct post link
           setPostData(data);
         }
         else if (data) {
