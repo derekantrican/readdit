@@ -6,6 +6,12 @@ import { LocalStorageSources, readSources, saveSources } from "../utils/sourcesM
 export function SideBar(props) {
   const [sources, setSources] = useState([]);
   const [editingSources, setEditingSources] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('Sources');
+
+  const tabs = [
+    'Sources',
+    ...localStorage.getItem('dev') == 'true' ? ['Dev'] : [] 
+  ];
 
   const handleValueChange = (newSourceString, index) => {
     setSources(sources.map((v,i) => {
@@ -66,78 +72,102 @@ export function SideBar(props) {
   return (
     <div className={props.isOpen ? "sidebar open" : "sidebar"}>
       <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100vh - 55px)'}}>
-        <div style={{display: 'flex'}}>
-            <h2 style={{margin: 5}}>Sources</h2>
+        <div style={{display: 'flex', backgroundColor: '#3f3f3f'}}>
+          {tabs.map(t =>
+            <SideBarTab name={t} selected={selectedTab == t} onClick={() => setSelectedTab(t)}/>
+          )}
         </div>
-        <p style={{margin: 5}}>Add any sources such as...</p>
-        <ul style={{margin: '5px 5px 15px 5px'}}>
-            <li>Subreddit (eg '/r/funny')</li>
-            <li>Public multireddit (eg '/u/soupyhands/m/climbing')</li>
-            <li>Multiple subreddits (eg '/r/funny+gifs+videos')</li>{/*Todo: I don't know if this format is really supported (seems that only the first sub is retrieved) */}
-        </ul>
-        {sources.length == 0 ? 
-            <div style={{color: 'yellow', margin: 10}}>No sources (defaulting to '/r/all'). Click '+' to add one!</div>
-        :null}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="droppable">
-            {droppableProvided=> (
-              <div style={{display: 'flex', flexDirection: 'column', overflowY: 'scroll'}} ref={droppableProvided.innerRef} {...droppableProvided.droppableProps}>
-                {sources.map((source, index) =>
-                  <Draggable key={source.id} draggableId={source.id} index={index} isDragDisabled={!editingSources}>
-                    {draggableProvided => (
-                      <div ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}
-                        style={{display: 'flex' /*style needs to be after draggableProps*/, ...draggableProvided.draggableProps.style}}>
-                        <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.title ?? source.sourceString}
-                                onChange={e => handleValueChange(e.target.value, index)}/>
-                        {editingSources ?
-                          <Fragment>
-                            {/*Reorder source*/}
-                            <i {...draggableProvided.dragHandleProps}
-                              style={{fontSize: '25px', textAlign: 'center', width: 25, padding: 5, ...draggableProvided.dragHandleProps.style}}
-                              className='bi bi-list'/>
-                            {/*Delete source*/}
-                            <button style={{margin: 5}} onClick={() => deleteSource(index)}>
-                              <i style={{fontSize: '20px'}} className='bi bi-trash'/>
-                            </button>
-                          </Fragment>
-                        :
-                          <Fragment>
-                            {/*Select source*/}
-                            <button style={{margin: 5}} onClick={() => selectSource(index)}>
-                              <i style={{fontSize: '20px'}} className={`bi bi-circle${source.selected ? '-fill' : ''}`}/>
-                            </button>
-                          </Fragment>
-                        }
-                      </div>
+        {selectedTab == 'Sources' ?
+          <Fragment>
+            <p style={{margin: 5}}>Add any sources such as...</p>
+            <ul style={{margin: '5px 5px 15px 5px'}}>
+                <li>Subreddit (eg '/r/funny')</li>
+                <li>Public multireddit (eg '/u/soupyhands/m/climbing')</li>
+                <li>Multiple subreddits (eg '/r/funny+gifs+videos')</li>{/*Todo: I don't know if this format is really supported (seems that only the first sub is retrieved) */}
+            </ul>
+            {sources.length == 0 ? 
+                <div style={{color: 'yellow', margin: 10}}>No sources (defaulting to '/r/all'). Click '+' to add one!</div>
+            :null}
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="droppable">
+                {droppableProvided=> (
+                  <div style={{display: 'flex', flexDirection: 'column', overflowY: 'scroll'}} ref={droppableProvided.innerRef} {...droppableProvided.droppableProps}>
+                    {sources.map((source, index) =>
+                      <Draggable key={source.id} draggableId={source.id} index={index} isDragDisabled={!editingSources}>
+                        {draggableProvided => (
+                          <div ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}
+                            style={{display: 'flex' /*style needs to be after draggableProps*/, ...draggableProvided.draggableProps.style}}>
+                            <input style={{margin: 5, height: 30, flex: '1 0 0'}} type='text' value={source.title ?? source.sourceString}
+                                    onChange={e => handleValueChange(e.target.value, index)}/>
+                            {editingSources ?
+                              <Fragment>
+                                {/*Reorder source*/}
+                                <i {...draggableProvided.dragHandleProps}
+                                  style={{fontSize: '25px', textAlign: 'center', width: 25, padding: 5, ...draggableProvided.dragHandleProps.style}}
+                                  className='bi bi-list'/>
+                                {/*Delete source*/}
+                                <button style={{margin: 5}} onClick={() => deleteSource(index)}>
+                                  <i style={{fontSize: '20px'}} className='bi bi-trash'/>
+                                </button>
+                              </Fragment>
+                            :
+                              <Fragment>
+                                {/*Select source*/}
+                                <button style={{margin: 5}} onClick={() => selectSource(index)}>
+                                  <i style={{fontSize: '20px'}} className={`bi bi-circle${source.selected ? '-fill' : ''}`}/>
+                                </button>
+                              </Fragment>
+                            }
+                          </div>
+                        )}
+                      </Draggable>
                     )}
-                  </Draggable>
+                    {droppableProvided.placeholder /*used to create space for drag-drop*/}
+                  </div>
                 )}
-                {droppableProvided.placeholder /*used to create space for drag-drop*/}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-        <div style={{display: 'flex', justifyContent: 'end'}}>
-          <button style={{margin: 5, width: 100, backgroundColor: '#0202ba', borderColor: 'transparent', borderRadius: '10%'}}
-            onClick={() => window.location.replace(generateAuthUrl())}>
-            Auth reddit
-          </button>
-          <button style={{margin: 5, width: 40}} onClick={() => addSource()}>
-              <i style={{fontSize: '25px'}} className='bi bi-plus'/>
-          </button>
-          {sources.length > 0 ? 
-            <button style={{margin: 5, width: 40}} onClick={() => setEditingSources(!editingSources)}>
-              <i style={{fontSize: '20px'}} className={`bi bi-${editingSources ? 'check-lg' : 'pencil'}`}/>
+              </Droppable>
+            </DragDropContext>
+            <div style={{display: 'flex', justifyContent: 'end'}}>
+              <button style={{margin: 5, width: 100, backgroundColor: '#0202ba', borderColor: 'transparent', borderRadius: '10%'}}
+                onClick={() => window.location.replace(generateAuthUrl())}>
+                Auth reddit
+              </button>
+              <button style={{margin: 5, width: 40}} onClick={() => addSource()}>
+                  <i style={{fontSize: '25px'}} className='bi bi-plus'/>
+              </button>
+              {sources.length > 0 ? 
+                <button style={{margin: 5, width: 40}} onClick={() => setEditingSources(!editingSources)}>
+                  <i style={{fontSize: '20px'}} className={`bi bi-${editingSources ? 'check-lg' : 'pencil'}`}/>
+                </button>
+              :null}
+            </div>
+            <button style={{margin: '25px 5px 5px 5px', minHeight: 40}} onClick={saveChanges}>
+              Save
             </button>
-          :null}
-        </div>
-        <button style={{margin: '25px 5px 5px 5px', minHeight: 40}} onClick={saveChanges}>
-                Save
-        </button>
-        <div style={{flex: '1 0 0'}}/>
-        {localStorage.getItem('dev') == 'true' ? <p style={{margin: 10}}>Dev mode</p> : null}
+          </Fragment>
+        /*Todo: add a "Settings" tab for things like comment sorting, etc */
+        : selectedTab == 'Dev' ?
+          <Fragment>
+            <p style={{margin: 10}}>Dev mode</p>
+          </Fragment>
+        : null}
       </div>
     </div>
+  );
+}
+
+function SideBarTab(props) {
+  const tabStyle = {
+    padding: '7px 12px',
+    borderRight: '2px solid gray',
+    borderBottom: `2px solid ${props.selected ? 'lightblue' : 'transparent'}`,
+    fontWeight: props.selected ? 'bold' : 'normal',
+    fontSize: 'x-large',
+    textAlign: 'center',
+  };
+
+  return (
+    <div style={tabStyle} onClick={props.onClick}>{props.name}</div>
   );
 }
 
