@@ -10,7 +10,8 @@ export function SideBar(props) {
 
   const tabs = [
     'Sources',
-    ...localStorage.getItem('dev') == 'true' ? ['Dev'] : [] 
+    'Settings',
+    ...localStorage.getItem('dev') == 'true' ? ['Dev'] : []
   ];
 
   const handleValueChange = (newSourceString, index) => {
@@ -72,7 +73,7 @@ export function SideBar(props) {
   return (
     <div className={props.isOpen ? "sidebar open" : "sidebar"}>
       <div style={{display: 'flex', flexDirection: 'column', height: 'calc(100vh - 55px)'}}>
-        <div style={{display: 'flex', backgroundColor: '#3f3f3f'}}>
+        <div style={{display: 'flex', justifyContent: 'space-around', backgroundColor: '#3f3f3f'}}>
           {tabs.map(t =>
             <SideBarTab name={t} selected={selectedTab == t} onClick={() => setSelectedTab(t)}/>
           )}
@@ -145,12 +146,15 @@ export function SideBar(props) {
               Save
             </button>
           </Fragment>
-        /*Todo: add a "Settings" tab for things like comment sorting, etc */
+        : selectedTab == 'Settings' ?
+          <Fragment>
+            <div style={{margin: 10}}>No settings yet...</div>
+          </Fragment>
         : selectedTab == 'Dev' ?
           <Fragment>
             <p style={{margin: 10}}>Dev mode</p>
           </Fragment>
-        : null}
+        : null}  
       </div>
     </div>
   );
@@ -159,7 +163,6 @@ export function SideBar(props) {
 function SideBarTab(props) {
   const tabStyle = {
     padding: '7px 12px',
-    borderRight: '2px solid gray',
     borderBottom: `2px solid ${props.selected ? 'lightblue' : 'transparent'}`,
     fontWeight: props.selected ? 'bold' : 'normal',
     fontSize: 'x-large',
