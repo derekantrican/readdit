@@ -197,8 +197,9 @@ function App() {
   }, [saveScrollPosition]);
 
   useEffect(() => {
-    //Restore scroll position after sidepanel closes
-    //(I tried a few different methods, but this seemed to be the only one that worked)
+    //Restore scroll position after sidepanel closes or after currentView changes
+    //(I tried a few different methods, but this seemed to be the only one that 
+    // worked with the timing of state changes)
     if (!panelOpen) {
       restoreScrollPosition();
     }
