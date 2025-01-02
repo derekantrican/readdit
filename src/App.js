@@ -165,11 +165,6 @@ function App() {
           setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
           setNextToken(data.data.after);
           setCurrentView('postList');
-          window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
-        }
-
-        if (data) {
-          restoreScrollPosition();
         }
       }
     }
@@ -196,6 +191,20 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    window.addEventListener('scroll', saveScrollPosition);
+    return () => window.removeEventListener('scroll', saveScrollPosition);
+  }, [saveScrollPosition]);
+
+  useEffect(() => {
+    //Restore scroll position after sidepanel closes or after currentView changes
+    //(I tried a few different methods, but this seemed to be the only one that 
+    // worked with the timing of state changes)
+    if (!panelOpen) {
+      restoreScrollPosition();
+    }
+  }, [panelOpen, currentView]);
+
   const hidePost = (id) => {
     const newHiddenPosts = hiddenPosts.concat([id]);
     setHiddenPosts(newHiddenPosts);
@@ -209,19 +218,6 @@ function App() {
       setNextToken(data.data.after);
     }
   };
-
-  useEffect(() => {
-    window.addEventListener('scroll', saveScrollPosition);
-    return () => window.removeEventListener('scroll', saveScrollPosition);
-  }, [saveScrollPosition]);
-
-  useEffect(() => {
-    //Restore scroll position after sidepanel closes
-    //(I tried a few different methods, but this seemed to be the only one that worked)
-    if (!panelOpen) {
-      restoreScrollPosition();
-    }
-  }, [panelOpen]);
 
   return (
     <div className={panelOpen ? 'noscroll' : ''/*Don't allow the screen to scroll while the panel is open*/}>
@@ -239,7 +235,6 @@ function App() {
                   openPost={() => {
                     setPostData([{data:{children:[{data:p}]}}]); //set post data ahead of time (before postData is actually fetched)
                     setCurrentView('postDetail');
-                    window.scrollTo({top: 0, left: 0, behavior: 'instant'}); //Reset scroll position for comments view
                     
                     setLastSourceString(sourceString);
                     navigateSource(p.permalink);
