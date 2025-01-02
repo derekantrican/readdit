@@ -8,7 +8,7 @@ function ImageGallery(props) {
     return Math.max.apply(null, this);
   };
 
-  const sizeRatio = Object.values(props.post.media_metadata).map(meta => meta.s.y / meta.s.x).max();
+  const sizeRatio = Object.values(props.post.media_metadata).filter(meta => meta.status == 'valid').map(meta => meta.s.y / meta.s.x).max();
   const height = sizeRatio * (window.screen.width - 30);
   
   useEffect(() => {
