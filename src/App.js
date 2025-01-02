@@ -285,9 +285,9 @@ function Header(props) {
     <div style={{position: 'fixed', top: 0, width: '100%', zIndex: 1000, display: isVisible ? 'flex' : 'none', flexDirection: 'column', height: 55}}>
       <div style={{display: 'flex',  alignItems: 'center', height: 40, padding: 5, backgroundColor: '#3f3f3f'}}>
         <div className={`menu-btn ${props.panelOpen ? 'close' : ''}`} onClick={props.togglePanel}>
-          <div class="btn-line"></div>
-          <div class="btn-line"></div>
-          <div class="btn-line"></div>
+          <div className="btn-line"></div>
+          <div className="btn-line"></div>
+          <div className="btn-line"></div>
         </div>
         <h2 style={{margin: 0}}>Readdit</h2>
       </div>
