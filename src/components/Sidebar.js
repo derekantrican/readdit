@@ -2,11 +2,13 @@ import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Fragment, useEffect, useState } from "react";
 import { generateAuthUrl } from "../utils/authUser";
 import { LocalStorageSources, readSources, saveSources } from "../utils/sourcesManager";
+import { LocalStorageSettings, saveSettings } from "../utils/settingsManager";
 
 export function SideBar(props) {
   const [sources, setSources] = useState([]);
   const [editingSources, setEditingSources] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Sources');
+  const [pendingSettings, setPendingSettings] = useState(JSON.parse(JSON.stringify(LocalStorageSettings))); // Make a copy of the current settings
 
   const tabs = [
     'Sources',
@@ -52,6 +54,7 @@ export function SideBar(props) {
   const saveChanges = () => {
     //Todo: validate source strings (use the regex in App.navigateSource) and show validation errors
     saveSources(sources);
+    saveSettings(pendingSettings);
     props.closePanel();
   };
   
@@ -148,7 +151,18 @@ export function SideBar(props) {
           </Fragment>
         : selectedTab == 'Settings' ?
           <Fragment>
-            <div style={{margin: 10}}>No settings yet...</div>
+            <div style={{margin: 10, display: 'flex', alignItems: 'center'}}>
+                <div>Expiration time</div>
+                <input
+                  style={{margin: 10, height: 30, width: 50, padding: '0px 5px'}}
+                  type='text' 
+                  value={pendingSettings.expirationTimeMin}
+                  onChange={e => setPendingSettings({...pendingSettings, expirationTimeMin: Number(e.target.value)})}/>
+                <div>minutes</div>
+            </div>
+            <button style={{margin: '25px 5px 5px 5px', minHeight: 40}} onClick={saveChanges /* This save action will be the same as the sources one */}>
+              Save
+            </button>
           </Fragment>
         : selectedTab == 'Dev' ?
           <Fragment>

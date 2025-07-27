@@ -5,6 +5,7 @@ import PostDetail from './components/PostDetail';
 import SideBar from './components/Sidebar';
 import { authUser, calculateExpiration, refreshToken } from './utils/authUser';
 import { LocalStorageSources, readSources, saveSources } from './utils/sourcesManager';
+import { LocalStorageSettings, readSettings } from './utils/settingsManager';
 
 const cache = {};
 
@@ -44,6 +45,7 @@ function App() {
 
   const navigateSource = (src) => {
     readSources();
+    readSettings();
 
     var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
     var resolvedSourceString;
@@ -83,7 +85,7 @@ function App() {
       url = `https://www.reddit.com${requestPath}/.json?${urlParams}`;
     }
 
-    const decayTime = 15 * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
+    const decayTime = LocalStorageSettings.expirationTimeMin * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
     
     if (cache[requestPath] && (!postNextToken || (cache[requestPath].nextTokens ?? []).includes(postNextToken)) && (new Date() - cache[requestPath].updated) < decayTime) {
       return cache[requestPath].data;
