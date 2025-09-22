@@ -13,14 +13,23 @@ function ImageGallery(props) {
   
   useEffect(() => {
     const imageList = [];
-    for (var media of props.post.gallery_data.items) { //gallery_data dictates the order of the images
-      if (props.post.media_metadata[media.media_id].status == 'valid') {
-        var metadata = props.post.media_metadata[media.media_id];
-        imageList.push(metadata.s.u ?? metadata.s.gif);
-      }
-    }
 
-    setImages(imageList);
+    try {
+      for (var media of props.post.gallery_data.items) { //gallery_data dictates the order of the images        
+        // Todo: we should maybe change the approach here. https://reddit.com/r/homelab/comments/1nn96i5/thisll_have_to_do_until_our_next_house
+        // is a post where NONE of the items in gallery_data.items are in media_metadata. So maybe we should just grab all the items from media_metadata
+        // which have a 'valid' status? I don't think this necessarily guaruntees the correct order in the gallery, but that might work
+        if (props.post.media_metadata[media.media_id].status == 'valid') {
+          var metadata = props.post.media_metadata[media.media_id];
+          imageList.push(metadata.s.u ?? metadata.s.gif);
+        }
+      }
+  
+      setImages(imageList);
+    }
+    catch (err) {
+      console.error(err);
+    }
   }, []);
 
   const buttonStyle = {
