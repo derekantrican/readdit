@@ -41,7 +41,10 @@ function PostDetailHeader(props) {
             <div>{props.data.score}</div>
             <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
         </div>
-        <div style={{margin: 10, fontWeight: 'bold'}}>{props.data.title}</div>
+        <div style={{margin: 10, display: 'flex', flexDirection: 'column'}}>
+          <div style={{fontWeight: 'bold'}}>{props.data.title}</div>
+          <div style={{fontSize: '12px', color: '#aaa', marginTop: 3}}>u/{props.data.author}</div>
+        </div>
         <div style={{flex: '1 0 0'}}/>{/*Fill available space so close button is always at the far right*/}
         <i style={{height: 30, width: 30, fontSize: '25px', marginLeft: 10}} className='bi bi-x-lg' onClick={() => props.close()}/>
         </div>
@@ -83,11 +86,15 @@ function Comment(props) {
         </div>
         <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 10, overflowWrap: 'anywhere'}}>
           <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>{props.comment.data.body}</Markdown>
-          {props.comment.data.replies && 
-            props.comment.data.replies.data.children[0].kind != 'more' //Todo: there *are* more comments here, but we can't currently handle them. So this will hide the "Replies" button for now
-            ? <button style={{width: 80, alignSelf: 'end'}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>
-            : null
-          }
+          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 3}}>
+            <div style={{fontSize: '11px', color: '#999'}}>u/{props.comment.data.author}</div>
+            <div style={{flex: '1 0 0'}}/>{/*Spacer to push button to the right*/}
+            {props.comment.data.replies && 
+              props.comment.data.replies.data.children[0].kind != 'more' //Todo: there *are* more comments here, but we can't currently handle them. So this will hide the "Replies" button for now
+              ? <button style={{width: 80}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>
+              : null
+            }
+          </div>
         </div>
       </div>
       {/*Todo: see if I can de-dupe this code with 'PostDetailComments' above*/}
