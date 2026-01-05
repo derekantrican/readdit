@@ -3,6 +3,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw'; // Needed to allow HTML from our custom remarkRedditSuperscript plugin to render instead of being escaped
 import remarkRedditSuperscript from '../utils/remarkRedditSuperscript';
+import EmbedContainer from './embeds/EmbedContainer';
 import { storage } from '../utils/settingsManager';
 import { baseUrl } from '../utils/config';
 
@@ -111,6 +112,7 @@ function UserDetail(props) {
                 <div style={{fontSize: '12px', color: '#aaa', marginBottom: 5}}>
                   in {post.subreddit_name_prefixed}
                 </div>
+                <EmbedContainer post={post}/>
                 {post.selftext && (
                   <div style={{fontSize: '14px', color: '#ccc', marginBottom: 5, maxHeight: '100px', overflow: 'hidden'}}>
                     {post.selftext.substring(0, 200)}...
