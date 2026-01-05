@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw'; // Needed to allow HTML from our custom remarkRedditSuperscript plugin to render instead of being escaped
+import remarkRedditSuperscript from '../utils/remarkRedditSuperscript';
 import { storage } from '../utils/settingsManager';
 import { baseUrl } from '../utils/config';
 
@@ -78,7 +80,7 @@ function UserDetail(props) {
               in {comment.data.subreddit_name_prefixed}
             </div>
             <div style={{overflowWrap: 'anywhere'}}>
-              <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>
+              <Markdown remarkPlugins={[remarkGfm, remarkRedditSuperscript]} rehypePlugins={[rehypeRaw]} components={MarkdownComponents}>
                 {comment.data.body}
               </Markdown>
             </div>

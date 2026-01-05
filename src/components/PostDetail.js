@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw'; // Needed to allow HTML from our custom remarkRedditSuperscript plugin to render instead of being escaped
+import remarkRedditSuperscript from '../utils/remarkRedditSuperscript';
 import EmbedContainer from './embeds/EmbedContainer';
 import { storage } from '../utils/settingsManager';
 import { baseUrl } from '../utils/config';
@@ -17,9 +19,6 @@ const MarkdownComponents = {
     return <a {...props} target="_blank" rel="noopener noreferrer" />;
   }
 };
-
-//Todo: there's still trouble rendering markdown superscripts. I tried the remark-supersub Markdown plugin, but the syntax it expects
-//is not the same as reddit (it expects '^this^` rather than just `^this` where each consecutive ^ increases the "superscript level")
 
 function PostDetail(props) {
   return (
@@ -69,7 +68,7 @@ function PostDetailHeader(props) {
         </div>
         {props.data.selftext ?
           <div style={{overflowWrap: 'anywhere'}}>
-            <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>{props.data.selftext}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm, remarkRedditSuperscript]} rehypePlugins={[rehypeRaw]} components={MarkdownComponents}>{props.data.selftext}</Markdown>
           </div>
         : null}
     </div>
@@ -105,7 +104,7 @@ function Comment(props) {
           <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 10, overflowWrap: 'anywhere'}}>
-          <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>{props.comment.data.body}</Markdown>
+          <Markdown remarkPlugins={[remarkGfm, remarkRedditSuperscript]} rehypePlugins={[rehypeRaw]} components={MarkdownComponents}>{props.comment.data.body}</Markdown>
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 3}}>
             {showUsernames && 
               <div 
