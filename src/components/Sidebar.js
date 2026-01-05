@@ -163,6 +163,14 @@ export function SideBar(props) {
                   onChange={e => setPendingSettings({...pendingSettings, expirationTimeMin: Number(e.target.value)})}/>
                 <div>minutes</div>
             </div>
+            <div style={{margin: 10, display: 'flex', alignItems: 'center'}}>
+                <input
+                  style={{marginRight: 10}}
+                  type='checkbox'
+                  checked={pendingSettings.showUsernames ?? true}
+                  onChange={e => setPendingSettings({...pendingSettings, showUsernames: e.target.checked})}/>
+                <div>Show usernames</div>
+            </div>
             <button style={{margin: '25px 5px 5px 5px', minHeight: 40}} onClick={saveChanges /* This save action will be the same as the sources one */}>
               Save
             </button>

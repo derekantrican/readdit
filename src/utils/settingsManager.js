@@ -7,7 +7,10 @@ const KEYS = {
 };
 
 const DEFAULTS = {
-  SETTINGS: { expirationTimeMin: 15 },
+  SETTINGS: { 
+    expirationTimeMin: 15,
+    showUsernames: true,
+  },
   SOURCES: [],
   HIDDEN_POSTS: [],
   DEV_MODE: false,

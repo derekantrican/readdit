@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import EmbedContainer from './embeds/EmbedContainer';
+import { storage } from '../utils/settingsManager';
 
 const MarkdownComponents = {
   a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" /> // Custom link component to open links in new tabs (which preserves the PWA state)
@@ -32,6 +33,7 @@ function PostDetail(props) {
   
 function PostDetailHeader(props) {
     //Todo: show images (& galleries - eg functionalprint), embeds (eg videos), etc
+    const showUsernames = storage.getSettings().showUsernames ?? true;
   
     return (
         <div style={{display: 'flex', flexDirection: 'column'}}>
@@ -43,7 +45,7 @@ function PostDetailHeader(props) {
         </div>
         <div style={{margin: 10, display: 'flex', flexDirection: 'column'}}>
           <div style={{fontWeight: 'bold'}}>{props.data.title}</div>
-          <div style={{fontSize: '12px', color: '#aaa', marginTop: 3}}>u/{props.data.author}</div>
+          {showUsernames && <div style={{fontSize: '12px', color: '#aaa', marginTop: 3}}>u/{props.data.author}</div>}
         </div>
         <div style={{flex: '1 0 0'}}/>{/*Fill available space so close button is always at the far right*/}
         <i style={{height: 30, width: 30, fontSize: '25px', marginLeft: 10}} className='bi bi-x-lg' onClick={() => props.close()}/>
@@ -70,6 +72,7 @@ function PostDetailComments(props) {
 
 function Comment(props) {
   const [areRepliesExpanded, setAreRepliesExpanded] = useState(false);
+  const showUsernames = storage.getSettings().showUsernames ?? true;
 
   const levelsAsArray = props.level ? Array.from(Array(props.level).keys()) : [];
 
@@ -87,7 +90,7 @@ function Comment(props) {
         <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 10, overflowWrap: 'anywhere'}}>
           <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>{props.comment.data.body}</Markdown>
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop: 3}}>
-            <div style={{fontSize: '11px', color: '#999'}}>u/{props.comment.data.author}</div>
+            {showUsernames && <div style={{fontSize: '11px', color: '#999'}}>u/{props.comment.data.author}</div>}
             <div style={{flex: '1 0 0'}}/>{/*Spacer to push button to the right*/}
             {props.comment.data.replies && 
               props.comment.data.replies.data.children[0].kind != 'more' //Todo: there *are* more comments here, but we can't currently handle them. So this will hide the "Replies" button for now
