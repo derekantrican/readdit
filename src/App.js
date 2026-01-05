@@ -2,10 +2,12 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import PostListing from './components/PostListing';
 import PostDetail from './components/PostDetail';
+import UserDetail from './components/UserDetail';
 import SideBar from './components/Sidebar';
 import { authUser, calculateExpiration, refreshToken } from './utils/authUser';
 import { LocalStorageSources, readSources, saveSources } from './utils/sourcesManager';
 import { LocalStorageSettings, readSettings, storage } from './utils/settingsManager';
+import { baseUrl } from './utils/config';
 
 const cache = {};
 
@@ -22,10 +24,11 @@ function App() {
   const [error, setError] = useState(null);
   const [currentView, setCurrentView] = useState('postList');
   const [postData, setPostData] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [userAboutData, setUserAboutData] = useState(null);
+  const [username, setUsername] = useState(null);
 
   const [isDevMode, setIsDevMode] = useState(false);
-
-  const baseUrl = () => process.env.NODE_ENV != 'production' ? 'http://localhost:3000' : 'https://readdit.app';
 
   useEffect(() => {
     if (window.location.pathname.endsWith('/dev')) {
@@ -47,7 +50,10 @@ function App() {
     readSources();
     readSettings();
 
-    var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+)/.exec(src);
+    // Normalize /u/ to /user/ before pattern matching
+    const normalizedSrc = src?.replace('/u/', '/user/');
+
+    var allowedSourceMatch = /\/(r\/\w+(\/comments\/\w+)?|u(ser)?\/\w+\/m\/\w+|comments\/\w+|user\/\w+)/.exec(normalizedSrc);
     var resolvedSourceString;
     if (allowedSourceMatch) {
       resolvedSourceString = allowedSourceMatch[0];
@@ -59,12 +65,11 @@ function App() {
       resolvedSourceString = '/r/all';
     }
 
-    resolvedSourceString = resolvedSourceString.replace('/u/', '/user/'); //Allow /u/derekantrican as a shorthand for /user/derekantrican
-
     if (sourceString != null &&
         resolvedSourceString != sourceString && 
         !resolvedSourceString.includes('/comments/') &&
-        !sourceString.includes('/comments/')) {
+        !sourceString.includes('/comments/') &&
+        !resolvedSourceString.match(/\/user\/\w+$/)) {
       //Reset posts when subscribed post source isn't changing (to give an empty view while the new content is grabbed)
       setPosts([]);
     }
@@ -158,15 +163,32 @@ function App() {
           window.history.pushState({}, null, baseUrl() + sourceString);
         }
 
-        const data = await getRedditData(sourceString);
-        if (sourceString.includes('/comments/')) {
-          setCurrentView('postDetail'); //This might be set already, but setting again in case someone is coming from a direct post link
-          setPostData(data);
+        // Check if this is a user profile view
+        const userMatch = /\/user\/(\w+)$/.exec(sourceString);
+        if (userMatch) {
+          const user = userMatch[1];
+          setUsername(user);
+          setCurrentView('userDetail');
+          const data = await getRedditData(`/user/${user}`);
+          if (data) {
+            setUserData(data);
+          }
+          const aboutData = await getRedditData(`/user/${user}/about`);
+          if (aboutData) {
+            setUserAboutData(aboutData);
+          }
         }
-        else if (data) {
-          setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
-          setNextToken(data.data.after);
-          setCurrentView('postList');
+        else {
+          const data = await getRedditData(sourceString);
+          if (sourceString.includes('/comments/')) {
+            setCurrentView('postDetail'); //This might be set already, but setting again in case someone is coming from a direct post link
+            setPostData(data);
+          }
+          else if (data) {
+            setPosts(data.data.children.filter(p => p.kind == 't3' /*filter to only posts (when viewing saves)*/).map(p => p.data));
+            setNextToken(data.data.after);
+            setCurrentView('postList');
+          }
         }
       }
     }
@@ -251,10 +273,27 @@ function App() {
         : currentView == 'postDetail'
         ? <PostDetail 
             data={postData}
+            openUser={(user) => {
+              setLastSourceString(sourceString);
+              navigateSource(`/user/${user}`);
+            }}
             close={() => {
               navigateSource(lastSourceString);
               setLastSourceString(null);
           }}/> 
+        : currentView == 'userDetail'
+        ? <UserDetail
+            username={username}
+            data={userData}
+            aboutData={userAboutData}
+            openPost={(permalink) => {
+              setLastSourceString(sourceString);
+              navigateSource(permalink);
+            }}
+            close={() => {
+              navigateSource(lastSourceString);
+              setLastSourceString(null);
+            }}/>
         : null
       }
     </div>
