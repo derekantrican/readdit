@@ -3,6 +3,10 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import EmbedContainer from './embeds/EmbedContainer';
 
+const MarkdownComponents = {
+  a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" /> // Custom link component to open links in new tabs (which preserves the PWA state)
+};
+
 //Todo: there's still trouble rendering markdown superscripts. I tried the remark-supersub Markdown plugin, but the syntax it expects
 //is not the same as reddit (it expects '^this^` rather than just `^this` where each consecutive ^ increases the "superscript level")
 
@@ -43,7 +47,7 @@ function PostDetailHeader(props) {
         </div>
         {props.data.selftext ?
           <div style={{overflowWrap: 'anywhere'}}>
-            <Markdown remarkPlugins={[remarkGfm]}>{props.data.selftext}</Markdown>
+            <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>{props.data.selftext}</Markdown>
           </div>
         : null}
     </div>
@@ -78,7 +82,7 @@ function Comment(props) {
           <i style={{height: 15, width: 20, fontSize: '15px'}} className='bi bi-caret-down-fill'/>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', width: '100%', marginLeft: 10, overflowWrap: 'anywhere'}}>
-          <Markdown remarkPlugins={[remarkGfm]}>{props.comment.data.body}</Markdown>
+          <Markdown remarkPlugins={[remarkGfm]} components={MarkdownComponents}>{props.comment.data.body}</Markdown>
           {props.comment.data.replies && 
             props.comment.data.replies.data.children[0].kind != 'more' //Todo: there *are* more comments here, but we can't currently handle them. So this will hide the "Replies" button for now
             ? <button style={{width: 80, alignSelf: 'end'}} onClick={() => setAreRepliesExpanded(!areRepliesExpanded)}>Replies</button>

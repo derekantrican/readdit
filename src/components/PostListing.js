@@ -37,7 +37,7 @@ function PostListing(props) {
   
   function PostListingHeader(props) {
     return (
-      <div style={{display: 'flex', flexDirection: 'column'}} onClick={() => window.open(props.post.url, "_self")}>
+      <div style={{display: 'flex', flexDirection: 'column'}} onClick={() => window.open(props.post.url, "_blank")}>
         <div style={{display: 'flex', flexDirection: 'row'}}>
           <div style={{fontWeight: 'bold', flexGrow: 1}}>{props.post.title}</div>
           {props.post.over_18 ? <div style={{marginLeft: 10, color: 'red'}}>[NSFW]</div> : null}
