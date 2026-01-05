@@ -5,7 +5,7 @@ import PostDetail from './components/PostDetail';
 import SideBar from './components/Sidebar';
 import { authUser, calculateExpiration, refreshToken } from './utils/authUser';
 import { LocalStorageSources, readSources, saveSources } from './utils/sourcesManager';
-import { LocalStorageSettings, readSettings } from './utils/settingsManager';
+import { LocalStorageSettings, readSettings, storage } from './utils/settingsManager';
 
 const cache = {};
 
@@ -29,16 +29,16 @@ function App() {
 
   useEffect(() => {
     if (window.location.pathname.endsWith('/dev')) {
-      localStorage.setItem('dev', 'true');
+      storage.setDevMode(true);
       alert('Dev mode has been turned on');
     }
     else if (window.location.pathname.endsWith('/auth')) {
       authUser(window.location.search);
     }
 
-    setIsDevMode(localStorage.getItem('dev') == 'true');
+    setIsDevMode(storage.isDevMode());
 
-    setHiddenPosts(JSON.parse(localStorage.getItem('hiddenPosts')) ?? []);
+    setHiddenPosts(storage.getHiddenPosts());
 
     navigateSource(window.location.pathname);
   }, []);
@@ -210,7 +210,7 @@ function App() {
   const hidePost = (id) => {
     const newHiddenPosts = hiddenPosts.concat([id]);
     setHiddenPosts(newHiddenPosts);
-    localStorage.setItem('hiddenPosts', JSON.stringify(newHiddenPosts));
+    storage.setHiddenPosts(newHiddenPosts);
   };
 
   const loadMorePosts = async () => {

@@ -1,10 +1,12 @@
+import { storage } from './settingsManager';
+
 export let LocalStorageSources = [];
 
 export function readSources() {
-  LocalStorageSources = JSON.parse(localStorage.getItem('sources')) ?? [];
+  LocalStorageSources = storage.getSources();
 }
 
 export function saveSources(sources) {
   LocalStorageSources = sources;
-  localStorage.setItem('sources', JSON.stringify(sources));
+  storage.setSources(sources);
 }

@@ -2,18 +2,18 @@ import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import { Fragment, useEffect, useState } from "react";
 import { generateAuthUrl } from "../utils/authUser";
 import { LocalStorageSources, readSources, saveSources } from "../utils/sourcesManager";
-import { LocalStorageSettings, saveSettings } from "../utils/settingsManager";
+import { LocalStorageSettings, readSettings, saveSettings, storage } from "../utils/settingsManager";
 
 export function SideBar(props) {
   const [sources, setSources] = useState([]);
   const [editingSources, setEditingSources] = useState(false);
   const [selectedTab, setSelectedTab] = useState('Sources');
-  const [pendingSettings, setPendingSettings] = useState(JSON.parse(JSON.stringify(LocalStorageSettings))); // Make a copy of the current settings
+  const [pendingSettings, setPendingSettings] = useState({}); // Will be loaded in useEffect
 
   const tabs = [
     'Sources',
     'Settings',
-    ...localStorage.getItem('dev') == 'true' ? ['Dev'] : []
+    ...storage.isDevMode() ? ['Dev'] : []
   ];
 
   const handleValueChange = (newSourceString, index) => {
@@ -61,6 +61,9 @@ export function SideBar(props) {
   useEffect(() => {
     readSources();
     setSources(LocalStorageSources);
+    
+    readSettings();
+    setPendingSettings(JSON.parse(JSON.stringify(LocalStorageSettings))); // Make a copy of the loaded settings
   }, []);
 
   const onDragEnd = result => {
