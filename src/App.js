@@ -253,7 +253,10 @@ function App() {
               navigateSource(null); //Navigating to an empty source will pull from localStorage
             }}/>
             <div style={{paddingTop: 55}}>
-              {posts.filter(p => !hiddenPosts.includes(p.id)).map(p => 
+              {posts
+                .filter(p => !hiddenPosts.includes(p.id))
+                .filter(p => !(storage.getSettings().hideAnnouncements && p.stickied))
+                .map(p => 
                 <PostListing key={p.id} post={p} isDevMode={isDevMode}
                   hidePost={(id) => hidePost(id)}
                   openPost={() => {

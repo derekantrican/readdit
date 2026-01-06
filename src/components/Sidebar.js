@@ -171,6 +171,22 @@ export function SideBar(props) {
                   onChange={e => setPendingSettings({...pendingSettings, showUsernames: e.target.checked})}/>
                 <div>Show usernames</div>
             </div>
+            <div style={{margin: 10, display: 'flex', alignItems: 'center'}}>
+                <input
+                  style={{marginRight: 10}}
+                  type='checkbox'
+                  checked={pendingSettings.hideAnnouncements ?? false}
+                  onChange={e => setPendingSettings({...pendingSettings, hideAnnouncements: e.target.checked})}/>
+                <div>Hide announcements</div>
+            </div>
+            <div style={{margin: 10, display: 'flex', alignItems: 'center'}}>
+                <input
+                  style={{marginRight: 10}}
+                  type='checkbox'
+                  checked={pendingSettings.hidePinnedComments ?? false}
+                  onChange={e => setPendingSettings({...pendingSettings, hidePinnedComments: e.target.checked})}/>
+                <div>Hide pinned comments</div>
+            </div>
             <button style={{margin: '25px 5px 5px 5px', minHeight: 40}} onClick={saveChanges /* This save action will be the same as the sources one */}>
               Save
             </button>

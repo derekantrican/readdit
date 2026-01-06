@@ -76,9 +76,14 @@ function PostDetailHeader(props) {
 }
   
 function PostDetailComments(props) {
+  const hidePinnedComments = storage.getSettings().hidePinnedComments ?? false;
+  
   return (
     <div style={{display: 'flex', flexDirection: 'column'}}>
-      {props.data.filter(c => c.kind == 't1' /*filter out other kinds (eg 'more')*/).map(c =>
+      {props.data
+        .filter(c => c.kind == 't1' /*filter out other kinds (eg 'more')*/)
+        .filter(c => !(hidePinnedComments && c.data.stickied))
+        .map(c =>
         <Comment key={c.data.id} comment={c} openUser={props.openUser}/>
         //Todo: handle the 'more' comment at the end?
       )}

@@ -10,6 +10,8 @@ const DEFAULTS = {
   SETTINGS: { 
     expirationTimeMin: 15,
     showUsernames: true,
+    hideAnnouncements: false,
+    hidePinnedComments: false,
   },
   SOURCES: [],
   HIDDEN_POSTS: [],
