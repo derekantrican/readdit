@@ -78,22 +78,25 @@ function App() {
   }
 
   const getRedditData = async (requestPath, postNextToken) => {
+    // Normalize /u/ to /user/ for consistency
+    const normalizedPath = requestPath.replace('/u/', '/user/');
+    
     const urlParams = `limit=${process.env.NODE_ENV != 'production' ? 30 : 100}` +
     `${postNextToken ? `&after=${postNextToken}` : ''}` +
     `&raw_json=1`;
 
     let url = null;
-    if (requestPath.includes('oauth.reddit.com')) {
-      url = `${requestPath}?${urlParams}`;
+    if (normalizedPath.includes('oauth.reddit.com')) {
+      url = `${normalizedPath}?${urlParams}`;
     }
     else {
-      url = `https://www.reddit.com${requestPath}/.json?${urlParams}`;
+      url = `https://www.reddit.com${normalizedPath}/.json?${urlParams}`;
     }
 
     const decayTime = LocalStorageSettings.expirationTimeMin * 60 * 1000; //How long before we consider cached data "out of date" (in milliseconds)
     
-    if (cache[requestPath] && (!postNextToken || (cache[requestPath].nextTokens ?? []).includes(postNextToken)) && (new Date() - cache[requestPath].updated) < decayTime) {
-      return cache[requestPath].data;
+    if (cache[normalizedPath] && (!postNextToken || (cache[normalizedPath].nextTokens ?? []).includes(postNextToken)) && (new Date() - cache[normalizedPath].updated) < decayTime) {
+      return cache[normalizedPath].data;
     }
 
     try {
@@ -101,8 +104,8 @@ function App() {
       setError(null);
 
       let response = null;
-      if (requestPath.includes('oauth.reddit.com')) {
-        var matchingSource = LocalStorageSources.find(s => s.sourceString == requestPath);
+      if (normalizedPath.includes('oauth.reddit.com')) {
+        var matchingSource = LocalStorageSources.find(s => s.sourceString == normalizedPath);
 
         if (matchingSource.expiration_date && new Date(matchingSource.expiration_date) < new Date()) {
           const refreshData = await refreshToken(matchingSource.refresh_token);
@@ -132,18 +135,18 @@ function App() {
       const data = await response.json();
 
       if (postNextToken) {
-        cache[requestPath].data.data.children = cache[requestPath].data.data.children.concat(data.data.children); //Concat the "nextToken posts" with the previous ones
-        cache[requestPath].nextTokens = (cache[requestPath].nextTokens ?? []).concat([postNextToken]);
+        cache[normalizedPath].data.data.children = cache[normalizedPath].data.data.children.concat(data.data.children); //Concat the "nextToken posts" with the previous ones
+        cache[normalizedPath].nextTokens = (cache[normalizedPath].nextTokens ?? []).concat([postNextToken]);
 
         return data; //Return only this next page of posts (because 'loadMorePosts' is expecting only this next page)
       }
       else {
-        cache[requestPath] = {
+        cache[normalizedPath] = {
           data,
           updated : new Date(),
         };
 
-        return cache[requestPath].data;
+        return cache[normalizedPath].data;
       }
 
     }
@@ -198,19 +201,21 @@ function App() {
 
   const restoreScrollPosition = () => {
     if (sourceString) {
+      const normalizedSource = sourceString.replace('/u/', '/user/');
       if (sourceString.includes('/comments/')) {
         window.scrollTo({top: 0, left: 0, behavior: 'instant'}); //Reset scroll position for comments view
       }
       else {
-        window.scrollTo({top: cache[sourceString]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
+        window.scrollTo({top: cache[normalizedSource]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
       }
     }
   };
 
   const saveScrollPosition = () => {
     if (!panelOpen) { //Don't save the scroll position if the sidepanel is open
-      if (cache[sourceString]) {
-        cache[sourceString].scrollY = window.scrollY;
+      const normalizedSource = sourceString?.replace('/u/', '/user/');
+      if (cache[normalizedSource]) {
+        cache[normalizedSource].scrollY = window.scrollY;
       }
     }
   };
