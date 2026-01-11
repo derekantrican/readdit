@@ -5,6 +5,12 @@ import RedGifsPlayer from "./redgifs";
 function EmbedContainer(props) {
   // For crossposts, use the original post's data
   const post = props.post.crosspost_parent_list?.[0] ?? props.post;
+
+  // This should probably be "higher" (in the same place where we check to see if the post
+  // is hidden), but right now this is the only place that checks crossposts
+  if (post.removed_by_category) {
+    return null;
+  }
   
   const sizeRatio = post.thumbnail_height / post.thumbnail_width;
   const height = sizeRatio * (window.screen.width - 30);
