@@ -4,11 +4,8 @@ function ImageGallery(props) {
   const [images, setImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  Array.prototype.max = function() {
-    return Math.max.apply(null, this);
-  };
-
-  const sizeRatio = Object.values(props.post.media_metadata).filter(meta => meta.status == 'valid').map(meta => meta.s.y / meta.s.x).max();
+  const ratios = Object.values(props.post.media_metadata).filter(meta => meta.status == 'valid').map(meta => meta.s.y / meta.s.x);
+  const sizeRatio = Math.max(...ratios);
   const height = sizeRatio * (window.screen.width - 30);
   
   useEffect(() => {
@@ -31,6 +28,18 @@ function ImageGallery(props) {
       console.error(err);
     }
   }, []);
+
+  // Preload only adjacent images so arrow navigation is instant
+  // without fetching the entire gallery upfront
+  useEffect(() => {
+    if (images.length === 0) return;
+    const toPreload = [currentImageIndex - 1, currentImageIndex + 1]
+      .filter(i => i >= 0 && i < images.length);
+    toPreload.forEach(i => {
+      const img = new Image();
+      img.src = images[i];
+    });
+  }, [currentImageIndex, images]);
 
   const buttonStyle = {
     position: 'absolute',
