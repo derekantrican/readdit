@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PostListing from './components/PostListing';
 import PostDetail from './components/PostDetail';
 import UserDetail from './components/UserDetail';
@@ -29,6 +29,8 @@ function App() {
   const [username, setUsername] = useState(null);
 
   const [isDevMode, setIsDevMode] = useState(false);
+
+  const scrollLockRef = useRef(false);
 
   useEffect(() => {
     if (window.location.pathname.endsWith('/dev')) {
@@ -209,10 +211,11 @@ function App() {
         window.scrollTo({top: cache[normalizedSource]?.scrollY ?? 0, left: 0, behavior: 'instant'}); //Restore scroll position
       }
     }
+    scrollLockRef.current = false; //Unlock after scroll position is restored
   };
 
   const saveScrollPosition = () => {
-    if (!panelOpen) { //Don't save the scroll position if the sidepanel is open
+    if (!panelOpen && !scrollLockRef.current) { //Don't save the scroll position if the sidepanel is open or during view transitions
       const normalizedSource = sourceString?.replace('/u/', '/user/');
       if (cache[normalizedSource]) {
         cache[normalizedSource].scrollY = window.scrollY;
@@ -265,6 +268,13 @@ function App() {
                 <PostListing key={p.id} post={p} isDevMode={isDevMode}
                   hidePost={(id) => hidePost(id)}
                   openPost={() => {
+                    //Save scroll position and lock before view transition to prevent stale scroll handlers from overwriting
+                    const normalizedSource = sourceString?.replace('/u/', '/user/');
+                    if (cache[normalizedSource]) {
+                      cache[normalizedSource].scrollY = window.scrollY;
+                    }
+                    scrollLockRef.current = true;
+
                     setPostData([{data:{children:[{data:p}]}}]); //set post data ahead of time (before postData is actually fetched)
                     setCurrentView('postDetail');
                     
@@ -286,6 +296,7 @@ function App() {
               navigateSource(`/user/${user}`);
             }}
             close={() => {
+              scrollLockRef.current = true; //Lock during close transition
               navigateSource(lastSourceString);
               setLastSourceString(null);
           }}/> 
