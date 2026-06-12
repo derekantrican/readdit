@@ -7,6 +7,7 @@ const SCOPES = [
   'identity', //Needed to get username (for saves)
   'history', //Needed to get saves (using username)
   'mysubreddits', //Needed to get subscribed subs
+  'read', //Needed to browse subreddits (Reddit requires auth for all .json endpoints)
 ];
 
 export function generateAuthUrl() {
